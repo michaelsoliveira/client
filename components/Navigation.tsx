@@ -125,7 +125,7 @@ export default function Navigation() {
 
                     {navigation.map((item, key) => (
                         item.visible && (!item.subMenu  ?
-                          (<Link
+                        (<Link
                             key={key}
                             href={item.href}
                             className={classNames(
@@ -138,7 +138,7 @@ export default function Navigation() {
                           >
                             {item.name}
                         </Link>) :
-                        (<Menu as="div" className="relative inline-block text-left ">
+                        (<Menu as="div" className="relative inline-block text-left" key={key}>
                             {({ open }) => (
                         <>
                         <div>
@@ -166,7 +166,7 @@ export default function Navigation() {
                         <Menu.Items className="z-30 absolute w-96 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                             {item.subMenuItems.map((subMenu, key) =>
                             (<div className='px-2 py-2' key={key}>
-                                <Menu.Item>
+                                <Menu.Item key={key}>
                                     {({ active }) => (
                                         <Link
                                             href={subMenu.href}
@@ -284,7 +284,7 @@ export default function Navigation() {
                 {navigation.map((item, key) => (
                 item.visible &&
                 (!item.subMenu ?    
-                    (<Disclosure.Button
+                (<Disclosure.Button
                     key={key}
                     as="a"
                     href={item.href}
@@ -296,7 +296,7 @@ export default function Navigation() {
                 >
                     {item.name}
                 </Disclosure.Button>) :
-                    (<Popover as="div" className="w-full">
+                    (<Popover as="div" className="w-full" key={key}>
                             {({ open }) => (
                         <>
                         <div>
@@ -360,7 +360,8 @@ export default function Navigation() {
             )}
     
             </Popover>
-            ))))}
+                ))
+            ))}
                         
             </div>
             {isAuthenticated ? (

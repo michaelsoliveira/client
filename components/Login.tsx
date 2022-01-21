@@ -8,6 +8,7 @@ import { LockClosedIcon } from '@heroicons/react/solid'
 import { AuthContext } from '../contexts/AuthContext';
 import { parseCookies } from 'nookies';
 import Logo from '../components/Logo'
+import { ToastContainer, toast } from 'react-toastify';
 
 // import { userService } from 'services';
 
@@ -19,17 +20,7 @@ function Login({ location, parentShowLogin }: any) {
     parentShowLogin(false)
   }
     const router = useRouter();
-    const { signIn, setLoggedUser } = useContext(AuthContext)
-
-    useEffect(() => {
-        // redirect to home if already logged in
-        const { 'x-access-token': token } = parseCookies()
-      
-      if (token) {
-        router.push('/')
-      }
-
-    }, []);
+    const { signIn, loggedUser } = useContext(AuthContext)
 
     // form validation rules 
     const validationSchema = Yup.object().shape({
@@ -43,8 +34,12 @@ function Login({ location, parentShowLogin }: any) {
     const { errors } = formState;
 
     async function onSubmit({ email, password }: any) {
-      if (router.pathname == '/') hideLoginPage()
-      await signIn({ email, password })
+      try {
+        await signIn({ email, password })         
+        if (router.pathname == '/') hideLoginPage()
+      } catch (error: any) {
+        toast.error(error)
+      }
       
     }
 
@@ -133,6 +128,7 @@ function Login({ location, parentShowLogin }: any) {
               </button>
             </div>
       </form>
+      <ToastContainer />
     </div>
   )
 }

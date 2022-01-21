@@ -36,14 +36,28 @@ export function AuthProvider({ children }: Props) {
     const isAuthenticated = !!loggedUser;
 
     useEffect(() => {
-        const { 'x-access-token': token } = parseCookies()
-        
-        if (token) {
-            apiClient(AuthContext).get('/auth/me').then(result => {
-                const user = result.data
-                setLoggedUser(user)
-            })
+        async function fetchData() {
+            const { 'x-access-token': token } = parseCookies()
+            try {
+                if (token) {
+                    await apiClient(AuthContext).get('/auth/me')
+                        .then(result => {
+                        const user = result.data
+                        setLoggedUser(user)
+                    }).catch((error: any) => {
+                    throw error.errorMessage    
+                        // Router.push('/login')
+                    }) 
+                }    
+            } catch (data: any) {
+                // setLoggedUser(null)
+                // console.log(data)
+                throw data.errorMessage
+            }
         }
+
+        fetchData()
+        
     }, [])
 
     async function signIn({ email, password }: SignInData) : Promise<User | null>{
@@ -51,20 +65,20 @@ export function AuthProvider({ children }: Props) {
             email,
             password
         })
-        .then((response: any) => {
-            api.defaults.headers.common['Authorization'] = `Bearer ${response.token.accessToken}`
+            .then((response: any) => {
+                api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token.accessToken}`
 
-            setCookie(undefined, 'x-access-token', response.token.accessToken, {
-                maxAge: response.token.expiresIn
-            })
+                setCookie(undefined, 'x-access-token', response.data.token.accessToken, {
+                    maxAge: response.data.token.expiresIn
+                })
 
-            setLoggedUser(response.user)
-            
-            Router.push('/')
-        })
-        .catch((error: any) => {
-            console.log(error.message)
-        })
+                setLoggedUser(response.data.user)
+                
+                Router.push('/')
+            }).catch(({ data }: any) => {
+                throw data.errorMessage
+            }) 
+        
         return loggedUser
     }
 

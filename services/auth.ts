@@ -14,26 +14,29 @@ export type User = {
 }
 
 type DataResponse = {
-    token: {
-        accessToken: string;
-        expiresIn: number;
+    error: boolean;
+    errorMessage: string;
+    data: {
+        user: User,
+        token: {
+            accessToken: string;
+            expiresIn: number;
+        };
+        refreshToken: string;
     };
-    refreshToken: string;
-    user: User;
 }
 
-export async function signInRequest(data: SignInRequestData) : Promise<DataResponse>{
+export async function signInRequest(dataRequest: SignInRequestData) : Promise<DataResponse>{
     try {
-        const dataResponse = await api.post('/auth/login', data)
-        const { user, token, refreshToken } = dataResponse.data as DataResponse
-        
+        const dataResponse = await api.post('/auth/login', dataRequest)
+        const { error, errorMessage, data } = dataResponse.data as DataResponse
         return Promise.resolve({
-            token,
-            user,
-            refreshToken
+            error,
+            errorMessage,
+            data
         })
-    } catch (error) {
-        return Promise.reject()
+    } catch (error: any) {
+        return Promise.reject(error.response)
     }
     
 }
