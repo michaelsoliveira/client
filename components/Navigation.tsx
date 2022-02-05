@@ -3,6 +3,7 @@ import { Fragment, useContext } from 'react'
 import { Disclosure, Menu, Transition, Popover } from '@headlessui/react'
 import { Link } from './Link'
 import Logo from './Logo'
+import { useSession, signOut } from 'next-auth/react'
 
 import {
     BookmarkAltIcon,
@@ -21,7 +22,9 @@ import {
     ClipboardListIcon
 } from '@heroicons/react/outline'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
-import { AuthContext } from '../contexts/AuthContext'
+import { AuthContext } from '../contexts/AuthContext2'
+import Image from 'next/image'
+import { useRouter } from 'next/router'
 
 
 const callsToAction = [
@@ -34,7 +37,15 @@ function classNames(...classes: any[]) {
 }
 
 export default function Navigation() {
-    const { isAuthenticated, loggedUser, signOut } = useContext(AuthContext)
+    // const { isAuthenticated, loggedUser, signOut } = useContext(AuthContext)
+
+    const { data: session } = useSession()
+    const router = useRouter()
+
+    async function logout() {
+        signOut()
+        router.push('/')
+    }
 
     const resources = [
     {
@@ -60,7 +71,13 @@ export default function Navigation() {
         description: 'Unidade de Trabalho',
         href: '#',
         icon: CalendarIcon,
-        }    
+        },
+    {
+        name: 'Cadastro de Especies',
+        description: 'Espécies Existentes',
+        href: '/especie',
+        icon: ClipboardListIcon,
+    }    
     
     ]
     const recentPosts = [
@@ -99,16 +116,16 @@ export default function Navigation() {
 
     const navigation = [
         { name: 'Dashboard', href: '/', current: true, visible: true, subMenu: false, subMenuItems: [] },
-        { name: 'Cadastro', href: '#', current: false, visible: !!isAuthenticated, subMenu: true, subMenuItems: resources },
+        { name: 'Cadastro', href: '#', current: false, visible: !!session, subMenu: true, subMenuItems: resources },
         { name: 'Soluções', href: '#', current: false, visible: true, subMenu: true, subMenuItems: solutions },
-        { name: 'Planejamento', href: '#', current: false, visible: !!isAuthenticated, subMenuItems: [] },
-        { name: 'Relatórios', href: '#', current: false, visible: !!isAuthenticated, subMenu: false, subMenuItems: [] }
+        { name: 'Planejamento', href: '#', current: false, visible: !!session, subMenuItems: [] },
+        { name: 'Relatórios', href: '#', current: false, visible: !!session, subMenu: false, subMenuItems: [] }
     ]
 
     const userNavigation = [
         { name: 'Perfil', href: '#', click: () => { alert("teste1") } },
         { name: 'Settings', href: '#', click: () => {} },
-        { name: 'Logout', href: '#', click: signOut },
+        { name: 'Logout', href: '#', click: () => signOut() },
     ]
     return (
         <Disclosure as="nav" className="bg-white shadow">
@@ -202,7 +219,7 @@ export default function Navigation() {
                         
             </div>
                 <div className='hidden md:block'>
-                    {!isAuthenticated && (
+                    {!session && (
                     <div className="px-2">
                         <Link href="/login" className="block bg-green-700 shadow hover:border-b-2 hover:border-green-700 text-sm px-6 py-2 
                         text-white rounded-md hover:text-white transition duration-500 ease-in-out hover:bg-green-600
@@ -214,7 +231,7 @@ export default function Navigation() {
                 </div>
                 
                 </div>
-                {isAuthenticated && (<div className="hidden md:block">
+                {session && (<div className="hidden md:block">
                 <div className="ml-4 flex items-center md:ml-6">
                     <button
                     type="button"
@@ -229,7 +246,7 @@ export default function Navigation() {
                     <div>
                         <Menu.Button className="max-w-xs bg-gray-700 rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-700 focus:ring-white">
                         <span className="sr-only">Open user menu</span>
-                        <img className="h-8 w-10 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="" />
+                        <img className="h-8 w-10 rounded-full" src={ session && session.user?.image !== null ? session.user?.image || 'https://img.icons8.com/office/80/000000/administrator-male--v1.png' : '' } alt="" />
                         </Menu.Button>
                     </div>
                     <Transition
@@ -364,15 +381,15 @@ export default function Navigation() {
             ))}
                         
             </div>
-            {isAuthenticated ? (
+            {session ? (
                 <div className="pt-4 pb-3 border-t border-gray-700">
                     <div className="flex items-center px-5">
                         <div className="flex-shrink-0">
-                        <img className="h-10 w-10 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="" />
+                        <img className="h-10 w-10 rounded-full" src={ session && session.user?.image !== null ? session.user?.image || 'https://img.icons8.com/office/80/000000/administrator-male--v1.png' : '' } alt="" />
                         </div>
                     <div className="ml-3">
-                        <div className="text-base font-medium leading-none text-gray-600">{loggedUser?.username}</div>
-                        <div className="text-sm font-medium leading-none text-gray-400">{loggedUser?.email}</div>
+                        <div className="text-base font-medium leading-none text-gray-600">{session && session.user?.name}</div>
+                        <div className="text-sm font-medium leading-none text-gray-400">{session && session.user?.email}</div>
                     </div>
                     <button
                     type="button"

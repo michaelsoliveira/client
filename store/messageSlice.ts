@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { toast } from "react-toastify";
 
 
 const initialState = {
@@ -10,10 +11,7 @@ const messageSlice = createSlice({
     initialState,
     reducers: {
         setMessage: (state, action: PayloadAction<any>) => {
-            // state.message = action.payload.message
-            return {
-                message: action.payload
-            }
+            state.message = action.payload
         },
         clearMessage: () => {
             return { message: '' }

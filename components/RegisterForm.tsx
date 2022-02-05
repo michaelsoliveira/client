@@ -7,14 +7,14 @@ import { RootState } from '../store'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { create } from '../store/userSlice'
 import * as Yup from 'yup'
-import { ToastContainer, toast } from 'react-toastify';
 import { setMessage } from "../store/messageSlice"
 import 'react-toastify/dist/ReactToastify.css';
-import { Link } from './Link'
-
+import AlertService from '../services/alert'
+import { signIn } from 'next-auth/react';
 import type { UserData } from "../services/user"
-import Router from 'next/router';
-import { AuthContext } from '../contexts/AuthContext';
+
+import { AuthContext } from '../contexts/AuthContext2';
+import { useRouter } from 'next/router';
 
 function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ')
@@ -22,11 +22,11 @@ function classNames(...classes: string[]) {
 
 export const RegisterForm = ({ styles, parentShowLogin }: any) => {
     const dispatch = useAppDispatch()
-    const { register, handleSubmit } = useForm()
+    const router = useRouter()
     const user = useSelector((state: RootState) => state.user.data)
     const errorMessage = useSelector((state: RootState) => state.user.errorMessage)
     const { message } = useSelector((state: RootState) => state.message) as any
-    const { signIn } = useContext(AuthContext)
+    // const { signIn } = useContext(AuthContext)
     function showLogin() {
         parentShowLogin(true)
     }
@@ -62,11 +62,26 @@ export const RegisterForm = ({ styles, parentShowLogin }: any) => {
         .unwrap()
         .then(async () => {
             const { email, password } = data
-            toast.success('Usuário Cadastrado com Sucesso!')
-            await signIn({ email, password });
+            
+            const res = await signIn('credentials', {
+            redirect: false,
+            email,
+            password,
+            // callbackUrl: `${window.location.origin}`,
+          }).then((response: any) => {
+            console.log(response)
+                if (response.ok) {
+                AlertService.success('Login realizado com sucesso')
+                router.push('/')
+                } else {
+                AlertService.warn('Email ou senha inválidos, verifique os dados e tente novamente!')
+                }
+            }).catch ((e) => {
+                console.log(e)
+            })
         })
             .catch((error) => {
-            toast.error(`Error: ${error.errorMessage}`)
+            AlertService.error(`Error: ${error.errorMessage}`)
         });
     }
 
@@ -74,6 +89,8 @@ export const RegisterForm = ({ styles, parentShowLogin }: any) => {
         username: string;
         email: string;
         password: string;
+        provider: string;
+        idProvider: string;
     }
 
     useEffect(() => {
@@ -92,6 +109,8 @@ export const RegisterForm = ({ styles, parentShowLogin }: any) => {
                     username: '',
                     email: '',
                     password: '',
+                    provider: '',
+                    idProvider: ''
                 }}
                 validationSchema={validationSchema}
                 onSubmit={ (
@@ -137,18 +156,13 @@ export const RegisterForm = ({ styles, parentShowLogin }: any) => {
                                 placeholder="******" />
                             <ErrorMessage className='text-sm text-red-500 mt-1' name="password" component="div" />
                             <div className='mt-8 flex flex-row justify-between w-full items-center'>
-                                <p className='hover:cursor-pointer font-roboto' onClick={showLogin}>Já possui cadastro no BOManejo?</p>
-                                <button className={classNames(styles.button, 'w-44')} type="submit">Cadastrar</button>
+                                <button className={classNames(styles.button, 'w-full')} type="submit">Cadastrar</button>
                             </div>
                     
                         </Form>
                     )
                 }}
             </Formik>
-            {message && (
-                <div>{message}</div>
-            )}
-            <ToastContainer className='lg:opacity-100' />
             
         </div>
     );

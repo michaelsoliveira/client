@@ -6,6 +6,8 @@ export type UserData = {
     email: string;
     username: string;
     password: string;
+    provider: string;
+    idProvider: string;
 }
 
 export type ResponseData = {
@@ -23,8 +25,16 @@ export async function create(dataRequest: UserData) : Promise<ResponseData> {
         }
 }
 
+export async function findByProvider(provider: string, user: any): Promise<any> {
+    
+    const response = await apiClient().get(`/provider/find?provider=${provider}&idProvider=${user.id}`)
+    
+    return response.data
+}
+
 const AuthService = {
-    create
+    create,
+    findByProvider
 }
 
 export default AuthService
