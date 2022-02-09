@@ -4,6 +4,8 @@ import GoogleProvider from "next-auth/providers/google"
 import GithubProvider from "next-auth/providers/github"
 import FacebookProvider from 'next-auth/providers/facebook'
 import userService from '../../../services/user'
+import { handleRefreshToken } from '../../../services/auth'
+import { useCallback } from "react"
 
 const GOOGLE_AUTHORIZATION_URL =
   "https://accounts.google.com/o/oauth2/v2/auth?" +
@@ -19,6 +21,7 @@ async function findProvider(provider: string, user: any) {
         username: user?.name,
         email: user?.email,
         password: '123456',
+        image: user?.image,
         provider,
         idProvider: user?.id
       }
@@ -34,44 +37,93 @@ async function findProvider(provider: string, user: any) {
 }
 
 async function refreshAccessToken(token: any) {
-  try {
-    const url =
-      "https://oauth2.googleapis.com/token?" +
-      new URLSearchParams({
-        client_id: process.env.GOOGLE_CLIENT_ID,
-        client_secret: process.env.GOOGLE_CLIENT_SECRET,
-        grant_type: "refresh_token",
-        refresh_token: token.refreshToken,
-      })
+  const provider = (token.accessToken?.substring(0, 3) === 'ya2') ? 'google' : 'local'
 
-    const response = await fetch(url, {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      method: "POST",
-    })
+  switch (provider) {
+    case 'local': {
+      try {
+        const response = await fetch('http://localhost:3333/auth/refresh', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ token: token.newRefreshToken !== token.refreshToken ? token.refreshToken : token.newRefreshToken })
+          
+        })
+        
+        const refreshToken = await response.json()
 
-    const refreshedTokens = await response.json()
+        if (refreshToken?.refresh_token) {
+          return {
+            ...token,
+            accessToken: refreshToken?.access_token,
+            accessTokenExpires: Date.now() + refreshToken?.expires_in * 1000,
+            refreshToken: refreshToken?.refresh_token ?? token?.refreshToken, // Fall back to old refresh token
+            newRefreshToken: refreshToken?.refresh_token ?? refreshToken?.refresh_token
+          }
+        } else {
+          return {
+            ...token,
+            accessToken: refreshToken?.access_token,
+            accessTokenExpires: refreshToken?.expires_in,
+            refreshToken: token.refreshToken, // Fall back to old refresh token
+          }
+        }
+        
+      } catch (error) {
+        console.log(error)
 
-    if (!response.ok) {
-      throw refreshedTokens
+        return {
+          ...token,
+          error: "RefreshAccessTokenError",
+        }
+      }
+      break;     
     }
+    
+    case 'google': {
+      try {
+        const url =
+          "https://oauth2.googleapis.com/token?" +
+          new URLSearchParams({
+            client_id: process.env.GOOGLE_CLIENT_ID,
+            client_secret: process.env.GOOGLE_CLIENT_SECRET,
+            grant_type: "refresh_token",
+            refresh_token: token.refreshToken,
+          })
 
-    return {
-      ...token,
-      accessToken: refreshedTokens.access_token,
-      accessTokenExpires: Date.now() + refreshedTokens.expires_in * 1000,
-      refreshToken: refreshedTokens.refresh_token ?? token.refreshToken, // Fall back to old refresh token
-    }
-  } catch (error) {
-    console.log(error)
+        const response = await fetch(url, {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          method: "POST",
+        })
 
-    return {
-      ...token,
-      error: "RefreshAccessTokenError",
+        const refreshedTokens = await response.json()
+
+        if (!response.ok) {
+          throw refreshedTokens
+        }
+
+        return {
+          ...token,
+          accessToken: refreshedTokens.access_token,
+          accessTokenExpires: Date.now() + refreshedTokens.expires_in * 1000,
+          refreshToken: refreshedTokens.refresh_token ?? token.refreshToken, // Fall back to old refresh token
+        }
+      } catch (error) {
+        console.log(error)
+
+        return {
+          ...token,
+          error: "RefreshAccessTokenError",
+        }
+      }
     }
+    
   }
-}
+  }
 
 export default NextAuth({
   // https://next-auth.js.org/configuration/providers
@@ -138,7 +190,7 @@ export default NextAuth({
     strategy: "jwt",
 
     // Seconds - How long until an idle session expires and is no longer valid.
-    // maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 24 * 60 * 60, // 30 * 24 * 60 * 60, // 30 days
 
     // Seconds - Throttle how frequently to write to database to extend a session.
     // Use it to limit write operations. Set to 0 to always update the database.
@@ -166,7 +218,7 @@ export default NextAuth({
     // signOut: '/auth/signout', // Displays form with sign out button
     // error: '/login', // Error code passed in query string as ?error=
     // verifyRequest: '/auth/verify-request', // Used for check email page
-    // newUser: null // If set, new users will be directed here on first sign in
+    newUser: '/user/change-password' // If set, new users will be directed here on first sign in
   },
 
   // Callbacks are asynchronous functions you can use to control what happens
@@ -202,6 +254,24 @@ export default NextAuth({
         }
       }
 
+      // if (token?.refreshToken) {
+      //   const tokenExpires = token.accessTokenExpires
+      //   const almostNow = Date.now() + 30 * 1000
+        
+      //   if (typeof tokenExpires !== typeof "undefined" && tokenExpires < almostNow) {
+      //     // const currentRefreshToken = token?.refreshToken ? 
+      //     try {
+      //       const data = await handleRefreshToken(token.newRefreshToken ? token.newRefreshToken : token.refreshToken)
+      //       if (data.refresh_token) {
+      //         token.newRefreshToken = data.refresh_token
+      //       }
+              
+      //     } catch (error) {
+      //       console.log(error)
+      //     }
+      //   }
+      // }
+      
       // Return previous token if the access token has not expired yet
       if (Date.now() < token.accessTokenExpires) {
         return token

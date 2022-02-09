@@ -3,7 +3,20 @@ import { Dialog, Transition } from '@headlessui/react'
 import { ExclamationIcon } from '@heroicons/react/outline'
 import classNames from './Utils/classNames'
 
-export default function Modal(props: any) {
+interface ModaType {
+    title: string,
+    buttonText: string,
+    bodyText: string,
+    styleButton: string,
+    parentReturnData: (id: string) => void,
+    parentFunction: (id: string) => Promise<void>,
+    hideModal: () => void,
+    open: boolean,
+    data?: any,
+    className?: string
+}
+
+export default function Modal(props: ModaType) {
 
     const {
         title,
@@ -14,7 +27,8 @@ export default function Modal(props: any) {
         parentFunction,
         hideModal,
         open,
-        data
+        data,
+        className
     } = props
 
 //   const [open, setOpen] = useState(true)
@@ -31,7 +45,11 @@ export default function Modal(props: any) {
 
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="fixed z-10 inset-0 overflow-y-auto" initialFocus={cancelButtonRef} onClose={hideModal}>
+      <Dialog as="div" className={
+              classNames("fixed z-10 inset-0 overflow-y-auto",
+                      className
+              )}
+        initialFocus={cancelButtonRef} onClose={hideModal}>
         <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <Transition.Child
             as={Fragment}

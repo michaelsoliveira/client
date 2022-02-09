@@ -71,33 +71,47 @@ function Navigation() {
     }
     var resources = [
         {
-            name: 'Cadastro da Empresa',
+            name: 'Empresa',
             description: 'Informações da Empresa',
             href: '/empresa',
             icon: outline_1.ClipboardListIcon
         },
         {
-            name: 'Cadastro da UMF',
+            name: 'UMF',
             description: 'Unidade de Manejo Florestal',
             href: '#',
             icon: outline_1.SupportIcon
         },
         {
-            name: 'Cadastro de UPA',
+            name: 'UPA',
             description: 'Unidade de Produção Anual',
             href: '#',
             icon: outline_1.BookmarkAltIcon
         },
         {
-            name: 'Cadastro de UT',
+            name: 'UT',
             description: 'Unidade de Trabalho',
             href: '#',
             icon: outline_1.CalendarIcon
         },
         {
-            name: 'Cadastro de Especies',
+            name: 'Especies',
             description: 'Espécies Existentes',
             href: '/especie',
+            icon: outline_1.ClipboardListIcon,
+            subResource: [
+                {
+                    name: 'Categoria de Espécies',
+                    description: 'Categoria de Espécies',
+                    href: '/categoria-especie',
+                    icon: outline_1.ClipboardListIcon
+                }
+            ]
+        },
+        {
+            name: 'Categoria de Espécies',
+            description: 'Categoria de Espécies',
+            href: '/categoria-especie',
             icon: outline_1.ClipboardListIcon
         }
     ];
@@ -141,8 +155,8 @@ function Navigation() {
         { name: 'Relatórios', href: '#', current: false, visible: !!session, subMenu: false, subMenuItems: [] }
     ];
     var userNavigation = [
-        { name: 'Perfil', href: '#', click: function () { alert("teste1"); } },
-        { name: 'Settings', href: '#', click: function () { } },
+        { name: 'Perfil', href: '#' },
+        { name: 'Alterar Senha', href: '/user/change-password' },
         { name: 'Logout', href: '#', click: function () { return react_3.signOut(); } },
     ];
     return (React.createElement(react_2.Disclosure, { as: "nav", className: "bg-white shadow" }, function (_a) {
@@ -194,7 +208,7 @@ function Navigation() {
                                 React.createElement(react_2.Transition, { as: react_1.Fragment, enter: "transition ease-out duration-100", enterFrom: "transform opacity-0 scale-95", enterTo: "transform opacity-100 scale-100", leave: "transition ease-in duration-75", leaveFrom: "transform opacity-100 scale-100", leaveTo: "transform opacity-0 scale-95" },
                                     React.createElement(react_2.Menu.Items, { className: "origin-top-right absolute z-20 right-0 mt-2 w-48 shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" }, userNavigation.map(function (item, key) { return (React.createElement(react_2.Menu.Item, { key: key }, function (_a) {
                                         var active = _a.active;
-                                        return (React.createElement("a", { href: item.href, className: classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700'), onClick: item.click }, item.name));
+                                        return (React.createElement("a", { href: item.href, className: classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700'), onClick: item.click, "aria-hidden": "true" }, item.name));
                                     })); }))))))),
                     React.createElement("div", { className: "-mr-2 flex md:hidden" },
                         React.createElement(react_2.Disclosure.Button, { className: "bg-gray-200 inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-green-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-700 focus:ring-white" },

@@ -1,29 +1,45 @@
-import Select from './Select'
+import { OptionType, Select } from './Select'
 import { FormInput } from './FormInput'
-import { createRef, FormEvent, useRef, useContext, useEffect } from 'react'
+import { createRef, FormEvent, useRef, useContext, useEffect, useCallback, useState } from 'react'
 import { useRouter } from 'next/router'
 import { useForm } from 'react-hook-form'
 import alertService from '../services/alert'
 import { AuthContext } from '../contexts/AuthContext'
 import { useSession } from 'next-auth/react'
+import { LinkBack } from './LinkBack'
+import { Link } from './Link'
 
 const Especie = ({ id }: any) => {
     const { register, handleSubmit, formState: { errors }, setValue } = useForm()
-    const inputNome = useRef<HTMLInputElement>()
+    const [categoria, setCategoria] = useState<OptionType>()
+    const [categorias, setCategorias] = useState<any>()
     const { client } = useContext(AuthContext)
     const { data: session } = useSession()
     const router = useRouter()
     const isAddMode = !id
 
+    const loadOptions = async (inputValue: string, callback: (options: OptionType[]) => void) => {
+        const response = await client.get(`/categoria/search/q?nome=${inputValue}`)
+        const json = response.data
+        
+        callback(json?.map((category: any) => ({
+            value: category.id,
+            label: category.nome
+        })))
+    };
+
     useEffect(() => {        
-        // eslint-disable-next-line react-hooks/rules-of-hooks
         async function loadEspecie() {
         
             if (!isAddMode && typeof session !== typeof undefined) {
                 
-                const { data } = await client.get(`/especie/${id}`)
+                const { data: especie } = await client.get(`/especie/${id}`)
                 
-                for (const [key, value] of Object.entries(data)) {
+                setCategoria({
+                    label: especie?.categoria?.nome,
+                    value: especie?.categoria?.id
+                })
+                for (const [key, value] of Object.entries(especie)) {
                     setValue(key, value, {
                         shouldValidate: true,
                         shouldDirty: true
@@ -34,17 +50,36 @@ const Especie = ({ id }: any) => {
         
         loadEspecie()
 
-    }, [session, isAddMode, client, id])
+    }, [session, isAddMode, client, id, setValue, setCategoria])
+
+    useEffect(() => {
+        const defaultOptions = async () => {
+            if (typeof session !== typeof undefined){
+                const response = await client.get(`categoria`)
+                const { categorias } = response.data
+
+                setCategorias(categorias)
+            }
+        }
+        defaultOptions()    
+        
+    }, [session, client])
 
     const selectedCategoria = (data: any) => {
-        console.log(data)
+        setCategoria(data)
+        setValue('categoria', data?.value)
     }
 
     async function onSubmit(data: any) {
+        const preparedData = {
+            ...data,
+            categoria: categoria?.value ?? categoria?.value
+        }
+        
         try {
             return isAddMode
-                ? createEspecie(data)
-                : updateEspecie(id, data)
+                ? createEspecie(preparedData)
+                : updateEspecie(id, preparedData)
         } catch (error: any) {
             alertService.error(error.message);
         }
@@ -52,30 +87,61 @@ const Especie = ({ id }: any) => {
     }
 
     async function createEspecie(data: any) {
-        // await especieService.create(data)
         client.post('especie', data)
             .then((response: any) => {
-                const { especie } = response.data
-                alertService.success(`Especie ${especie?.nome} cadastrada com SUCESSO!!!`);
-                router.push('/especie')
+                const { error, message } = response.data
+                if (!error) {
+                    alertService.success(message);
+                    router.push('/especie')
+                } else {
+                    alertService.error(message)
+                }
             }) 
+    }
+
+    function getCategoriasDefaultOptions() {
+        return categorias?.map((categoria: any) => {
+            return {
+                label: categoria.nome,
+                value: categoria.id
+            }
+        })
     }
 
     async function updateEspecie(id: string, data: any) {
         
         client.put(`/especie/${id}`, data)
             .then((response: any) => {
-                const { especie } = response.data
-                alertService.success(`Especie ${especie?.nome} atualizada com SUCESSO!!!`);
-                router.push('/especie')
+                const { error, message } = response.data
+                if (!error) {
+                    alertService.success(message);
+                    router.push('/especie')
+                } else {
+                    alertService.error(message)
+                }
             })
     }
 
     return (
         <div>
-            <div className="bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
-                <div className="relative py-3 w-11/12 max-w-xl sm:mx-auto">
-                    <div className="relative p-8 bg-white shadow-sm sm:rounded-xl">
+            <div className="py-6 flex flex-col justify-center sm:py-12 bg-gray-50">
+                
+                <div className="relative py-3 w-11/12 max-w-xl mx-auto">
+                    <div className='flex flex-row items-center justify-between shadow-lg bg-gray-100 py-4 sm:rounded-t-xl'>
+                        
+                        <div>
+                            <LinkBack href="/especie" className="flex flex-col relative left-0 ml-4" />
+                        </div>
+                        <div>
+                            {isAddMode ? (
+                                <h1 className='text-xl text-gray-800'>Cadastro de Espécie</h1>
+                            ): (
+                                <h1 className='text-xl text-gray-800'>Editar Espécie</h1>
+                            )}
+                        </div>
+                        <div></div>
+                    </div>
+                    <div className="relative p-8 bg-white shadow-sm sm:rounded-b-xl">
                         <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
                             
                             <FormInput
@@ -84,9 +150,6 @@ const Especie = ({ id }: any) => {
                                 register={register}
                                 errors={errors}
                                 rules={ {required: 'O campo nome é obrigatório'} }
-                                // hasError={!!errors.nome}
-                                // errorMessage={errors.nome?.message}
-                                // forwardRef={inputNome}
                                 id="nome"
                                 className="pb-4"
                             />
@@ -122,10 +185,24 @@ const Especie = ({ id }: any) => {
                             />
 
                             <div className='pb-4'>
-                                <Select label="Categoria" value={ selectedCategoria } />
+                                <Select
+                                    initialData={
+                                        {
+                                            label: 'Selecione uma Categoria',
+                                            value: ''
+                                        }
+                                    }
+                                    selectedValue={categoria}
+                                    defaultOptions={getCategoriasDefaultOptions()}
+                                    options={loadOptions}
+                                    label="Categoria"
+                                    callback={selectedCategoria}
+                                />
                             </div>
-                            
-                            <button className="w-full bg-green-600 text-white p-3 rounded-md">Salvar</button>
+                            <div className='flex items-center justify-between pt-4'>
+                                <Link href="/especie" className="text-center w-2/5 bg-gray-200 text-gray-800 p-3 rounded-md">Voltar</Link>
+                                <button className="w-2/5 bg-green-600 text-white p-3 rounded-md">Salvar</button>
+                            </div>
                         </form>
                     </div>
                 </div>

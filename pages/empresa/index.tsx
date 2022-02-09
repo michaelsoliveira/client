@@ -16,12 +16,15 @@ const EmpresaIndex = () => {
     const [empresas, setEmpresas] = useState<EmpresaType[]>([])
     const [selectedEmpresa, setSelectedEmpresa] = useState<EmpresaType>()
     const [openModal, setOpenModal] = useState<boolean>(false)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     const { client } = useContext(AuthContext)
     
     const loadEmpresas = async () => {
         try {
+            setIsLoading(true)
             const { data: { empresas } } = await client.get('empresa')
             setEmpresas(empresas)    
+            setIsLoading(false)
         } catch (error:any) {
             AlertService.error(error?.message)
         }
@@ -66,96 +69,106 @@ const EmpresaIndex = () => {
                     Adicionar
                 </Link>
             </div>
-            <div className="flex flex-col p-6">
-            <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                    <tr>
-                    <th
-                        scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                        Razão Social / Nome Fantasia
-                    </th>
-                    <th
-                        scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                        Responsável / CREA
-                    </th>
-                    <th
-                        scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                        Registro Ambiental
-                    </th>
-                    
-                    <th
-                        scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                        CNPJ
-                    </th>
-                    <th scope="col" className="relative px-6 py-3">
-                        <span className="sr-only">Edit</span>
-                    </th>
-                    </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                    {empresas.map((empresa: any) => (
-                    <tr key={empresa.id}>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex flex-col items-starter">
-                            
-                            <div className="text-sm font-medium text-gray-900">{empresa.razaoSocial}</div>
-                            <div className="text-sm text-gray-500">{empresa.nomeFantasia}</div>
-                            
-                        </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{empresa.respTecnico}</div>
-                        <div className="text-sm text-gray-500">{empresa.creaResp}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-medium text-gray-900">
-                            <div className="text-sm text-gray-500">{empresa.cnpj}</div>
-                        </span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-medium text-gray-900">
-                            <div className="text-sm text-gray-500">{empresa.regAmbiental}</div>
-                        </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex flex-row items-center">
-                        <Link href={`/empresa/update/${empresa.id}`}>
-                            <PencilAltIcon className="w-5 h-5 ml-4 -mr-1 text-green-600 hover:text-green-700" />
-                        </Link>
-                        <Link href="#" onClick={() => toogleDeleteModal(empresa.id)}>
-                            <TrashIcon className="w-5 h-5 ml-4 -mr-1 text-red-600 hover:text-red-700" />
-                        </Link>
-                        </td>
-                    </tr>
-                    ))}
-                </tbody>
-                </table>
-            </div>
-            </div>
-            </div>
-            {openModal &&
-                <Modal
-                    styleButton="bg-red-600 hover:bg-red-700 focus:ring-red-500"
-                    title="Deletar Empresar"
-                    buttonText="Deletar"
-                    bodyText={`Tem certeza que seja excluir a empresa ${selectedEmpresa?.razaoSocial}?`}
-                    data={selectedEmpresa}
-                    parentReturnData={toogleDeleteModal}
-                    parentFunction={deleteEmpresa}
-                    hideModal={hideModal}
-                    open={openModal}
-                />}
-        </div>
+            {isLoading ? (
+                <div className="flex flex-row items-center justify-center h-56">Loading...</div>
+            ): (
+                <div className="flex flex-col p-6">
+                    <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                        {empresas.length ? (
+                            <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                                <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                                <table className="min-w-full divide-y divide-gray-200">
+                                <thead className="bg-gray-50">
+                                    <tr>
+                                    <th
+                                        scope="col"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    >
+                                        Razão Social / Nome Fantasia
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    >
+                                        Responsável / CREA
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    >
+                                        Registro Ambiental
+                                    </th>
+                                    
+                                    <th
+                                        scope="col"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    >
+                                        CNPJ
+                                    </th>
+                                    <th scope="col" className="relative px-6 py-3">
+                                        <span className="sr-only">Edit</span>
+                                    </th>
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                    {empresas.map((empresa: any) => (
+                                    <tr key={empresa.id}>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="flex flex-col items-starter">
+                                            
+                                            <div className="text-sm font-medium text-gray-900">{empresa.razaoSocial}</div>
+                                            <div className="text-sm text-gray-500">{empresa.nomeFantasia}</div>
+                                            
+                                        </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="text-sm text-gray-900">{empresa.respTecnico}</div>
+                                        <div className="text-sm text-gray-500">{empresa.creaResp}</div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                        <span className="text-sm font-medium text-gray-900">
+                                            <div className="text-sm text-gray-500">{empresa.cnpj}</div>
+                                        </span>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                        <span className="text-sm font-medium text-gray-900">
+                                            <div className="text-sm text-gray-500">{empresa.regAmbiental}</div>
+                                        </span>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex flex-row items-center">
+                                        <Link href={`/empresa/update/${empresa.id}`}>
+                                            <PencilAltIcon className="w-5 h-5 ml-4 -mr-1 text-green-600 hover:text-green-700" />
+                                        </Link>
+                                        <Link href="#" onClick={() => toogleDeleteModal(empresa.id)}>
+                                            <TrashIcon className="w-5 h-5 ml-4 -mr-1 text-red-600 hover:text-red-700" />
+                                        </Link>
+                                        </td>
+                                    </tr>
+                                    ))}
+                                </tbody>
+                                </table>
+                            </div>
+                            </div>    
+                        ): (
+                            <div className="flex flex-col items-center justify-center h-64">
+                                <h1 className="font-roboto text-2xl font-medium">Nenhuma Empresa Cadastrada</h1>
+                            </div>   
+                        )}
+                </div>
+                {openModal &&
+                    <Modal
+                        styleButton="bg-red-600 hover:bg-red-700 focus:ring-red-500"
+                        title="Deletar Empresar"
+                        buttonText="Deletar"
+                        bodyText={`Tem certeza que seja excluir a empresa ${selectedEmpresa?.razaoSocial}?`}
+                        data={selectedEmpresa}
+                        parentReturnData={toogleDeleteModal}
+                        parentFunction={deleteEmpresa}
+                        hideModal={hideModal}
+                        open={openModal}
+                    />}
+            </div>        
+            )}
     </div>
     )
 }

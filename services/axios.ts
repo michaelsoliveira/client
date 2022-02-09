@@ -13,18 +13,18 @@ export function apiClient(ctx?: any) {
         // withCredentials: true
     })
 
-    // api.interceptors.response.use(response => {
-    //     return response
-    // }, error => {
-    //     const { status } = error.response
+    api.interceptors.response.use(response => {
+        return response
+    }, error => {
+        const { status } = error.response
         
-    //     if (status === 401) {
-    //         console.log(error.response)
-    //         return location.href = '/'
-    //     }
+        if (status === 401) {
+            console.log(error.response)
+            return location.href = '/'
+        }
         
-    //     return Promise.reject(error)
-    // })
+        return Promise.reject(error)
+    })
     
     // if (token) {
     //     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;

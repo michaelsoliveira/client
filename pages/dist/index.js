@@ -38,111 +38,62 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 exports.getServerSideProps = void 0;
 var react_1 = require("react");
-var react_2 = require("@headlessui/react");
-var outline_1 = require("@heroicons/react/outline");
 var AuthContext_1 = require("../contexts/AuthContext");
-var nookies_1 = require("nookies");
-var hooks_1 = require("../store/hooks");
-var projectSlice_1 = require("../store/projectSlice");
-var user = {
-    name: 'Tom Cook',
-    email: 'tom@example.com',
-    imageUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
+var image_1 = require("next/image");
+var react_2 = require("next-auth/react");
+var Tabs_1 = require("../components/Tabs");
+var Logo_1 = require("../components/Logo");
+var styles = {
+    label: 'block text-gray-700 text-sm font-bold pt-2 pb-1',
+    field: 'text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none',
+    button: ' bg-green-600 text-white font-bold py-2 px-4 rounded hover:bg-green-500',
+    errorMsg: 'text-red-500 text-sm'
 };
-var navigation = [
-    { name: 'Dashboard', href: '#', current: true },
-    { name: 'Team', href: '#', current: false },
-    { name: 'Projects', href: '#', current: false },
-    { name: 'Calendar', href: '#', current: false },
-    { name: 'Reports', href: '#', current: false },
-];
-var userNavigation = [
-    { name: 'Your Profile', href: '#' },
-    { name: 'Settings', href: '#' },
-    { name: 'Sign out', href: '#' },
-];
-function classNames() {
-    var classes = [];
-    for (var _i = 0; _i < arguments.length; _i++) {
-        classes[_i] = arguments[_i];
-    }
-    return classes.filter(Boolean).join(' ');
-}
-function Dashboard() {
-    var dispatch = hooks_1.useAppDispatch();
-    var selectedProject = hooks_1.useAppSelector(projectSlice_1.selectProject);
-    var _a = react_1.useState(), project = _a[0], setProject = _a[1];
-    var context = react_1.useContext(AuthContext_1.AuthContext);
+function Dashboard(_a) {
+    var localSession = _a.localSession;
+    var _b = react_1.useState(false), showLogin = _b[0], setShowLogin = _b[1];
+    var client = react_1.useContext(AuthContext_1.AuthContext);
     return (React.createElement("div", { className: "min-h-full" },
-        React.createElement(react_2.Disclosure, { as: "nav", className: "bg-gray-300" }, function (_a) {
-            var open = _a.open;
-            return (React.createElement(React.Fragment, null,
-                React.createElement("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" },
-                    React.createElement("div", { className: "flex items-center justify-between h-16" },
-                        React.createElement("div", { className: "flex items-center" },
-                            React.createElement("div", { className: "flex-shrink-0" },
-                                React.createElement("img", { className: "h-8 w-8", src: "https://tailwindui.com/img/logos/workflow-mark-green-500.svg", alt: "Workflow" })),
-                            React.createElement("div", { className: "hidden md:block" },
-                                React.createElement("div", { className: "ml-10 flex items-baseline space-x-4" }, navigation.map(function (item) { return (React.createElement("a", { key: item.name, href: item.href, className: classNames(item.current
-                                        ? 'bg-gray-900 text-white'
-                                        : 'text-gray-300 hover:bg-gray-700 hover:text-white', 'px-3 py-2 rounded-md text-sm font-medium'), "aria-current": item.current ? 'page' : undefined }, item.name)); })))),
-                        React.createElement("div", { className: "hidden md:block" },
-                            React.createElement("div", { className: "ml-4 flex items-center md:ml-6" },
-                                React.createElement("button", { type: "button", className: "bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white" },
-                                    React.createElement("span", { className: "sr-only" }, "View notifications"),
-                                    React.createElement(outline_1.BellIcon, { className: "h-6 w-6", "aria-hidden": "true" })),
-                                React.createElement(react_2.Menu, { as: "div", className: "ml-3 relative" },
-                                    React.createElement("div", null,
-                                        React.createElement(react_2.Menu.Button, { className: "max-w-xs bg-gray-800 rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white" },
-                                            React.createElement("span", { className: "sr-only" }, "Open user menu"),
-                                            React.createElement("img", { className: "h-8 w-8 rounded-full", src: user.imageUrl, alt: "" }))),
-                                    React.createElement(react_2.Transition, { as: react_1.Fragment, enter: "transition ease-out duration-100", enterFrom: "transform opacity-0 scale-95", enterTo: "transform opacity-100 scale-100", leave: "transition ease-in duration-75", leaveFrom: "transform opacity-100 scale-100", leaveTo: "transform opacity-0 scale-95" },
-                                        React.createElement(react_2.Menu.Items, { className: "origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" }, userNavigation.map(function (item) { return (React.createElement(react_2.Menu.Item, { key: item.name }, function (_a) {
-                                            var active = _a.active;
-                                            return (React.createElement("a", { href: item.href, className: classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700') }, item.name));
-                                        })); })))))),
-                        React.createElement("div", { className: "-mr-2 flex md:hidden" },
-                            React.createElement(react_2.Disclosure.Button, { className: "bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white" },
-                                React.createElement("span", { className: "sr-only" }, "Open main menu"),
-                                open ? (React.createElement(outline_1.XIcon, { className: "block h-6 w-6", "aria-hidden": "true" })) : (React.createElement(outline_1.MenuIcon, { className: "block h-6 w-6", "aria-hidden": "true" })))))),
-                React.createElement(react_2.Disclosure.Panel, { className: "md:hidden" },
-                    React.createElement("div", { className: "px-2 pt-2 pb-3 space-y-1 sm:px-3" }, navigation.map(function (item) { return (React.createElement(react_2.Disclosure.Button, { key: item.name, as: "a", href: item.href, className: classNames(item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white', 'block px-3 py-2 rounded-md text-base font-medium'), "aria-current": item.current ? 'page' : undefined }, item.name)); })),
-                    React.createElement("div", { className: "pt-4 pb-3 border-t border-gray-700" },
-                        React.createElement("div", { className: "flex items-center px-5" },
-                            React.createElement("div", { className: "flex-shrink-0" },
-                                React.createElement("img", { className: "h-10 w-10 rounded-full", src: user.imageUrl, alt: "" })),
-                            React.createElement("div", { className: "ml-3" },
-                                React.createElement("div", { className: "text-base font-medium leading-none text-white" }, user.name),
-                                React.createElement("div", { className: "text-sm font-medium leading-none text-gray-400" }, user.email)),
-                            React.createElement("button", { type: "button", className: "ml-auto bg-gray-800 flex-shrink-0 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white" },
-                                React.createElement("span", { className: "sr-only" }, "View notifications"),
-                                React.createElement(outline_1.BellIcon, { className: "h-6 w-6", "aria-hidden": "true" }))),
-                        React.createElement("div", { className: "mt-3 px-2 space-y-1" }, userNavigation.map(function (item) { return (React.createElement(react_2.Disclosure.Button, { key: item.name, as: "a", href: item.href, className: "block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700" }, item.name)); }))))));
-        }),
-        React.createElement("header", { className: "bg-white shadow" },
-            React.createElement("div", { className: "max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8" },
-                React.createElement("h1", { className: "text-3xl font-bold text-gray-900" }, "Dashboard"))),
-        React.createElement("main", null,
-            React.createElement("div", { className: "max-w-7xl mx-auto py-6 sm:px-6 lg:px-8" },
-                React.createElement("div", { className: "px-4 py-6 sm:px-0" },
-                    React.createElement("div", { className: "border-4 border-dashed border-gray-200 rounded-lg h-96" }))))));
+        React.createElement("div", { className: "relative flex flex-row overflow-hidden" },
+            React.createElement("div", { className: "mt-10 px-12 mx-auto sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-20 xl:mt-12" },
+                React.createElement("div", { className: "relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-16" },
+                    React.createElement("div", { className: "sm:text-center lg:text-left" },
+                        React.createElement("div", null,
+                            React.createElement("h1", { className: "flex flex-col text-4xl tracking-tight font-bold text-gray-900 sm:text-2xl md:text-6xl lg:text-4xl xl:text-4xl" },
+                                React.createElement("span", { className: "block xl:inline" }, "BOManejo Web"),
+                                ' ',
+                                React.createElement("span", { className: "block text-green-600 xl:inline" }, "Invent\u00E1rio Florestal")),
+                            React.createElement("p", { className: "font-roboto mt-3 text-justify text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-lg lg:mx-0 mb-4" }, "O setor florestal brasileiro precisa \u2013 e demanda \u2013 de softwares que agilizem e aprimorem o processo de planejamento florestal, auxiliando na sele\u00E7\u00E3o de \u00E1rvores de corte com base em crit\u00E9rios claros, proporcionando melhor controle sobre a produ\u00E7\u00E3o de madeira e possibilitando o manejo florestal sustent\u00E1vel.")),
+                        React.createElement("div", { className: 'w-full' }, !localSession ? (React.createElement(Tabs_1["default"], null)) : (React.createElement("div", { className: "mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start" },
+                            React.createElement("div", { className: "rounded-md shadow" },
+                                React.createElement("a", { href: "#", className: "w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 md:py-4 md:text-lg md:px-10" }, "Iniciar")),
+                            React.createElement("div", { className: "mt-3 sm:mt-0 sm:ml-3" },
+                                React.createElement("a", { href: "#", className: "w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-green-700 bg-green-100 hover:bg-green-200 md:py-4 md:text-lg md:px-10", onClick: function () { } }, "Tutorial")))))))),
+            React.createElement("div", { className: "hidden lg:ml-0 lg:flex mt-6 lg:flex-col lg:items-center lg:inset-y-0 my-auto mr-20 rounded-tr-xl\n                lg:pr-20 lg:w-3/5 xl:w-2/5 bg-gradient-to-tr from-white via-white to-green-500" },
+                React.createElement("div", { className: 'flex flex-row' },
+                    React.createElement("div", { className: 'relative mb-10 pt-8' },
+                        React.createElement(Logo_1["default"], { width: 'w-24', height: 'h-24' })),
+                    React.createElement("div", { className: 'relative right-75 opacity-75 mb-8 pt-8' },
+                        React.createElement(Logo_1["default"], { width: 'w-24', height: 'h-24' })),
+                    React.createElement("div", { className: 'relative right-0 opacity-50 mb-4 pt-10 -rotate-12' },
+                        React.createElement(Logo_1["default"], { width: 'w-24', height: 'h-24' })),
+                    React.createElement("div", { className: 'relative right-0 opacity-25 mb-2 pt-16 rotate-12' },
+                        React.createElement(Logo_1["default"], { width: 'w-24', height: 'h-24' }))),
+                React.createElement(image_1["default"], { className: "object-cover object-center", src: "/web_devices.svg", alt: "", width: '1024px', height: '768px' })))));
 }
 exports["default"] = Dashboard;
 exports.getServerSideProps = function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
-    var token;
+    var session;
     return __generator(this, function (_a) {
-        token = nookies_1.parseCookies(ctx)["X-CSRFToken"];
-        if (!token) {
-            return [2 /*return*/, {
-                    redirect: {
-                        destination: '/login',
-                        permanent: false
-                    }
-                }];
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, react_2.getSession(ctx)];
+            case 1:
+                session = _a.sent();
+                return [2 /*return*/, {
+                        props: {
+                            localSession: session
+                        }
+                    }];
         }
-        // await apiClient(ctx).get('/users')
-        return [2 /*return*/, {
-                props: {}
-            }];
     });
 }); };

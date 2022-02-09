@@ -1,5 +1,5 @@
 
-import { Fragment, useContext, useEffect, useState } from 'react'
+import { useContext, useState } from 'react'
 import { AuthContext } from '../contexts/AuthContext'
 import { GetServerSideProps } from 'next'
 import { parseCookies } from 'nookies'
@@ -7,10 +7,8 @@ import { useAppDispatch, useAppSelector } from '../store/hooks'
 import { saveProject, reset, selectProject, ProjectState } from '../store/projectSlice'
 import { Link } from '../components/Link'
 import Image from 'next/image'
-import { RegisterForm } from '../components/RegisterForm'
-import Login from '../components/Login'
 import { getSession, useSession } from 'next-auth/react'
-import AlertService from '../services/alert'
+
 import Tabs from '../components/Tabs'
 import Logo from '../components/Logo'
 
@@ -23,23 +21,10 @@ const styles = {
   errorMsg: 'text-red-500 text-sm',
 }
 
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
-}
-
 export default function Dashboard({ localSession }: any) {
-  const dispatch = useAppDispatch()
-  const selectedProject = useAppSelector(selectProject)
-  const [project, setProject] = useState<ProjectState>()
+  
   const [showLogin, setShowLogin] = useState(false)
   const client = useContext(AuthContext)
-  const { data: session } = useSession()
-  const messageState = useAppSelector(state => state.message)
-
-  useEffect(() => {
-    
-  }, [session, client]);
-  
 
   return (
     
@@ -49,7 +34,7 @@ export default function Dashboard({ localSession }: any) {
           <div className="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-16">
           
             <div className="sm:text-center lg:text-left">
-              {!showLogin && (
+              
                 <div>
                   <h1 className="flex flex-col text-4xl tracking-tight font-bold text-gray-900 sm:text-2xl md:text-6xl lg:text-4xl xl:text-4xl">
                   <span className="block xl:inline">BOManejo Web</span>{' '}
@@ -61,15 +46,11 @@ export default function Dashboard({ localSession }: any) {
                     sobre a produção de madeira e possibilitando o manejo florestal sustentável.
                   </p>
               </div>
-              )}
+              
             <div className='w-full'>
               {
                   !localSession ? (
                     <Tabs />
-                    //   showLogin ? (
-                    //     <div className='w-96'><Login parentShowLogin={callbackShowLogin} /></div>
-                    //   ) :
-                    // <RegisterForm parentShowLogin={callbackShowLogin} styles={styles} />
                   ) : (
                   <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
                     <div className="rounded-md shadow">
@@ -131,15 +112,6 @@ export default function Dashboard({ localSession }: any) {
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
   const session = await getSession(ctx)
-  
-  // if (!session) {
-  //   return {
-  //     redirect: {
-  //       destination: '/',
-  //       permanent: false
-  //     }
-  //   }
-  // }
 
   return {
     props: {

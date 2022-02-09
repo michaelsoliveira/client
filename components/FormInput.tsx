@@ -33,7 +33,6 @@ export const FormInput = <TFormValues extends Record<string, unknown>>({
   // If the name is in a FieldArray, it will be 'fields.index.fieldName' and errors[name] won't return anything, so we are using lodash get
   const errorMessages = get(errors, name);
   const hasError = !!(errors && errorMessages);
-  const inputForm = useRef()
 
   return (
       <div className={classNames('', className)} aria-live="polite">

@@ -49,35 +49,49 @@ export default function Navigation() {
 
     const resources = [
     {
-        name: 'Cadastro da Empresa',
+        name: 'Empresa',
         description: 'Informações da Empresa',
         href: '/empresa',
         icon: ClipboardListIcon,
     },
     {
-        name: 'Cadastro da UMF',
+        name: 'UMF',
         description: 'Unidade de Manejo Florestal',
         href: '#',
         icon: SupportIcon,
     },
     {
-        name: 'Cadastro de UPA',
+        name: 'UPA',
         description: 'Unidade de Produção Anual',
         href: '#',
         icon: BookmarkAltIcon,
     },
     {
-        name: 'Cadastro de UT',
+        name: 'UT',
         description: 'Unidade de Trabalho',
         href: '#',
         icon: CalendarIcon,
         },
     {
-        name: 'Cadastro de Especies',
+        name: 'Especies',
         description: 'Espécies Existentes',
         href: '/especie',
         icon: ClipboardListIcon,
-    }    
+        subResource: [
+            {
+                name: 'Categoria de Espécies',
+                description: 'Categoria de Espécies',
+                href: '/categoria-especie',
+                icon: ClipboardListIcon,
+            }
+        ]
+    },
+    {
+        name: 'Categoria de Espécies',
+        description: 'Categoria de Espécies',
+        href: '/categoria-especie',
+        icon: ClipboardListIcon,
+    }
     
     ]
     const recentPosts = [
@@ -123,8 +137,8 @@ export default function Navigation() {
     ]
 
     const userNavigation = [
-        { name: 'Perfil', href: '#', click: () => { alert("teste1") } },
-        { name: 'Settings', href: '#', click: () => {} },
+        { name: 'Perfil', href: '#' },
+        { name: 'Alterar Senha', href: '/user/change-password' },
         { name: 'Logout', href: '#', click: () => signOut() },
     ]
     return (
@@ -245,8 +259,8 @@ export default function Navigation() {
                     <Menu as="div" className="ml-3 relative">
                     <div>
                         <Menu.Button className="max-w-xs bg-gray-700 rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-700 focus:ring-white">
-                        <span className="sr-only">Open user menu</span>
-                        <img className="h-8 w-10 rounded-full" src={ session && session.user?.image !== null ? session.user?.image || 'https://img.icons8.com/office/80/000000/administrator-male--v1.png' : '' } alt="" />
+                            <span className="sr-only">Open user menu</span>
+                            <img className="h-8 w-10 rounded-full" src={ session && session.user?.image !== null ? session.user?.image || 'https://img.icons8.com/office/80/000000/administrator-male--v1.png' : '' } alt="" />
                         </Menu.Button>
                     </div>
                     <Transition
@@ -268,7 +282,8 @@ export default function Navigation() {
                                     active ? 'bg-gray-100' : '',
                                     'block px-4 py-2 text-sm text-gray-700'
                                 )}
-                                onClick={item.click}
+                                        onClick={item.click}
+                                        aria-hidden="true"
                                 >
                                 {item.name}
                                 </a>

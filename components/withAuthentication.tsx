@@ -16,7 +16,7 @@ const withAuthentication = (WrappedComponent: any) => {
                 router.push('/login')
             }
         }
-      }, [session]);
+      }, [router, session]);
       
 
      // if there's a loggedInUser, show the wrapped page, otherwise show a loading indicator

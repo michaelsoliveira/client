@@ -36,29 +36,57 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.getServerSideProps = void 0;
-var router_1 = require("next/router");
-var Login_1 = require("../components/Login");
-var react_1 = require("next-auth/react");
-var Pagelogin = function (_a) {
-    var csrfToken = _a.csrfToken;
-    var router = router_1.useRouter();
-    return (React.createElement("div", { className: "min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" },
-        React.createElement("div", { className: "max-w-md w-full space-y-8 p-12 border rounded-md shadow-2xl" },
-            React.createElement(Login_1["default"], { csrfToken: csrfToken }))));
-};
-exports.getServerSideProps = function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
-            case 0:
-                _a = {};
-                _b = {};
-                return [4 /*yield*/, react_1.getCsrfToken(ctx)];
-            case 1: return [2 /*return*/, (_a.props = (_b.csrfToken = _c.sent(),
-                    _b),
-                    _a)];
-        }
+exports.getUser = exports.handleRefreshToken = exports.signInRequest = void 0;
+var api_1 = require("./api");
+var axios_1 = require("./axios");
+function signInRequest(dataRequest) {
+    return __awaiter(this, void 0, Promise, function () {
+        var dataResponse, _a, error, errorMessage, data, error_1;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    _b.trys.push([0, 2, , 3]);
+                    return [4 /*yield*/, api_1.api.post('/auth/login', dataRequest)];
+                case 1:
+                    dataResponse = _b.sent();
+                    _a = dataResponse.data, error = _a.error, errorMessage = _a.errorMessage, data = _a.data;
+                    return [2 /*return*/, Promise.resolve({
+                            error: error,
+                            errorMessage: errorMessage,
+                            data: data
+                        })];
+                case 2:
+                    error_1 = _b.sent();
+                    return [2 /*return*/, Promise.reject(error_1.response)];
+                case 3: return [2 /*return*/];
+            }
+        });
     });
-}); };
-exports["default"] = Pagelogin;
+}
+exports.signInRequest = signInRequest;
+function handleRefreshToken(token) {
+    return __awaiter(this, void 0, Promise, function () {
+        var response;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, axios_1.apiClient().post('/auth/refresh', { token: token })];
+                case 1:
+                    response = _a.sent();
+                    console.log(response.data);
+                    return [2 /*return*/, response.data];
+            }
+        });
+    });
+}
+exports.handleRefreshToken = handleRefreshToken;
+function getUser() {
+    return __awaiter(this, void 0, Promise, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, axios_1.apiClient().get('/auth/me')];
+                case 1: return [2 /*return*/, _a.sent()];
+            }
+        });
+    });
+}
+exports.getUser = getUser;

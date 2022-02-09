@@ -25,7 +25,7 @@ var withAuthentication = function (WrappedComponent) {
                     router.push('/login');
                 }
             }
-        }, [session]);
+        }, [router, session]);
         // if there's a loggedInUser, show the wrapped page, otherwise show a loading indicator
         return session ? React.createElement(WrappedComponent, __assign({}, props)) :
             React.createElement("div", { className: "flex flex-row items-center justify-center w-full h-screen opacity-50 bg-gradient-to-b from-white via-green-100 to-green-800" },

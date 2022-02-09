@@ -5,7 +5,7 @@ var react_2 = require("@headlessui/react");
 var outline_1 = require("@heroicons/react/outline");
 var classNames_1 = require("./Utils/classNames");
 function Modal(props) {
-    var title = props.title, buttonText = props.buttonText, bodyText = props.bodyText, styleButton = props.styleButton, parentReturnData = props.parentReturnData, parentFunction = props.parentFunction, hideModal = props.hideModal, open = props.open, data = props.data;
+    var title = props.title, buttonText = props.buttonText, bodyText = props.bodyText, styleButton = props.styleButton, parentReturnData = props.parentReturnData, parentFunction = props.parentFunction, hideModal = props.hideModal, open = props.open, data = props.data, className = props.className;
     //   const [open, setOpen] = useState(true)
     var cancelButtonRef = react_1.useRef(null);
     function openModal() {
@@ -15,7 +15,7 @@ function Modal(props) {
         parentFunction(id);
     }
     return (React.createElement(react_2.Transition.Root, { show: open, as: react_1.Fragment },
-        React.createElement(react_2.Dialog, { as: "div", className: "fixed z-10 inset-0 overflow-y-auto", initialFocus: cancelButtonRef, onClose: hideModal },
+        React.createElement(react_2.Dialog, { as: "div", className: classNames_1["default"]("fixed z-10 inset-0 overflow-y-auto", className), initialFocus: cancelButtonRef, onClose: hideModal },
             React.createElement("div", { className: "flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0" },
                 React.createElement(react_2.Transition.Child, { as: react_1.Fragment, enter: "ease-out duration-300", enterFrom: "opacity-0", enterTo: "opacity-100", leave: "ease-in duration-200", leaveFrom: "opacity-100", leaveTo: "opacity-0" },
                     React.createElement(react_2.Dialog.Overlay, { className: "fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" })),

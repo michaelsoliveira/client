@@ -9,7 +9,7 @@ var RiIcons = require("react-icons/ri");
 exports.SidebarData = [
     {
         title: 'Overview',
-        path: '/overview',
+        path: '#',
         icon: react_1["default"].createElement(AiIcons.AiFillHome, null),
         iconClosed: react_1["default"].createElement(RiIcons.RiArrowDownSFill, null),
         iconOpened: react_1["default"].createElement(RiIcons.RiArrowUpSFill, null),
@@ -28,7 +28,7 @@ exports.SidebarData = [
     },
     {
         title: 'Reports',
-        path: '/#',
+        path: '#',
         icon: react_1["default"].createElement(IoIcons.IoIosPaper, null),
         iconClosed: react_1["default"].createElement(RiIcons.RiArrowDownSFill, null),
         iconOpened: react_1["default"].createElement(RiIcons.RiArrowUpSFill, null),

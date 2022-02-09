@@ -1,11 +1,8 @@
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
-import { parseCookies } from 'nookies';
-import { useContext, useEffect } from 'react';
 import Login from '../components/Login'
-import { AuthContext } from '../contexts/AuthContext2';
-import { getProviders, getCsrfToken } from 'next-auth/react'
-const Pagelogin = ({ providers, csrfToken }: any) => {
+import { getCsrfToken } from 'next-auth/react'
+const Pagelogin = ({ csrfToken }: any) => {
 
   const router = useRouter()
   

@@ -1,11 +1,17 @@
 import authHeader from "./auth-header"
 import { apiClient } from "./axios"
 
+export type CategoriaEspecieType = {
+    id: string;
+    nome: string
+}
+
 export type EspecieType = {
     id: string;
     nome: string;
     nomeOrgao: string;
     nomeCientifico: string;
+    categoria?: CategoriaEspecieType
 }
 
 export type ResponseData = {

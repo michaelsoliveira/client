@@ -14,7 +14,21 @@ const useClient = (options?: any) => {
             Authorization: token ? `Bearer ${token}` : '',
             ...(options?.headers ? options.headers : {})
         }
+        
     });
+    
+    // api.interceptors.response.use(response => {
+    //     return response
+    // }, error => {
+    //     const { status } = error.response
+        
+    //     if (status === 401) {
+    //         console.log(error.response)
+    //         return location.href = '/'
+    //     }
+        
+    //     return Promise.reject(error)
+    // })
           
     return api;
   }, [options, token]);

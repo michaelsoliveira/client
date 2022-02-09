@@ -3,7 +3,7 @@ const Footer = () => {
     const dataAtual = new Date().getFullYear()
     return (
         <div>
-            <footer className="w-auto p-4 bottom-0 h-auto relative bg-gray-600 ">
+            <footer className="w-auto pb-4 bottom-0 h-auto relative bg-gray-600 ">
                 <div className="lg:flex  lg:mt-3 md:mx-12 lg:mx-24 lg:justify-between">
                     <div className="mb-4 lg:columns-1 w-96">
                         <p className="text-white font-bold mb-1 mt-3">About Us</p>

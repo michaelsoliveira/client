@@ -1,6 +1,7 @@
 "use strict";
 exports.__esModule = true;
-var react_1 = require("react");
+var react_1 = require("@headlessui/react");
+var classnames_1 = require("classnames");
 var Login_1 = require("./Login");
 var RegisterForm_1 = require("./RegisterForm");
 var styles = {
@@ -10,33 +11,25 @@ var styles = {
     errorMsg: 'text-red-500 text-sm'
 };
 var Tabs = function () {
-    var _a = react_1.useState(1), openTab = _a[0], setOpenTab = _a[1];
-    return (React.createElement(React.Fragment, null,
-        React.createElement("div", { className: "flex flex-wrap" },
-            React.createElement("div", { className: "w-full" },
-                React.createElement("ul", { className: "flex mb-0 list-none flex-wrap pt-3 pb-2 flex-row", role: "tablist" },
-                    React.createElement("li", { className: "-mb-px last:mr-0 flex-auto text-center" },
-                        React.createElement("a", { className: "text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
-                                (openTab === 1
-                                    ? "text-white bg-green-600"
-                                    : "text-green-600 bg-white"), onClick: function (e) {
-                                e.preventDefault();
-                                setOpenTab(1);
-                            }, "data-toggle": "tab", href: "#link1", role: "tablist" }, "Login")),
-                    React.createElement("li", { className: "-mb-px mr-2 last:mr-0 flex-auto text-center" },
-                        React.createElement("a", { className: "text-xs font-bold uppercase px-5 py-3 shadow-lg rounded block leading-normal " +
-                                (openTab === 2
-                                    ? "text-white bg-green-600"
-                                    : "text-green-600 bg-white"), onClick: function (e) {
-                                e.preventDefault();
-                                setOpenTab(2);
-                            }, "data-toggle": "tab", href: "#link2", role: "tablist" }, "Cadastro"))),
-                React.createElement("div", { className: "relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded" },
-                    React.createElement("div", { className: "px-4 py-5 flex-auto" },
-                        React.createElement("div", { className: "tab-content tab-space" },
-                            React.createElement("div", { className: openTab === 1 ? "block" : "hidden", id: "link1" },
-                                React.createElement(Login_1["default"], null)),
-                            React.createElement("div", { className: openTab === 2 ? "block" : "hidden", id: "link2" },
-                                React.createElement(RegisterForm_1.RegisterForm, { styles: styles })))))))));
+    return (React.createElement("div", { className: "w-full py-4" },
+        React.createElement(react_1.Tab.Group, null,
+            React.createElement(react_1.Tab.List, { className: "flex p-1 space-x-2 bg-green-900/20 rounded-lg" },
+                React.createElement(react_1.Tab, { className: function (_a) {
+                        var selected = _a.selected;
+                        return classnames_1["default"]('w-full py-2.5 text-sm leading-5 font-medium rounded-md transition-all', 'focus:outline-none focus:ring-2 ring-offset-2 ring-offset-green-400 ring-white ring-opacity-60', selected
+                            ? 'bg-green-700 text-white shadow'
+                            : 'text-gray-700 hover:bg-gray-50 hover:text-gray-700');
+                    } }, "Login"),
+                React.createElement(react_1.Tab, { className: function (_a) {
+                        var selected = _a.selected;
+                        return classnames_1["default"]('w-full py-2.5 text-sm leading-5 font-medium rounded-md transition-all', 'focus:outline-none focus:ring-2 ring-offset-2 ring-offset-green-400 ring-white ring-opacity-60', selected
+                            ? 'bg-green-700 text-white shadow'
+                            : 'text-gray-700 hover:bg-gray-100 hover:text-green-700');
+                    } }, "Cadastro")),
+            React.createElement(react_1.Tab.Panels, { className: "mt-2" },
+                React.createElement(react_1.Tab.Panel, { className: classnames_1["default"]('bg-white shadow-lg rounded-xl px-4 py-2') },
+                    React.createElement(Login_1["default"], null)),
+                React.createElement(react_1.Tab.Panel, { className: classnames_1["default"]('bg-white shadow-lg rounded-xl px-4 py-2') },
+                    React.createElement(RegisterForm_1.RegisterForm, { styles: styles }))))));
 };
 exports["default"] = Tabs;

@@ -3,7 +3,7 @@ exports.__esModule = true;
 var Footer = function () {
     var dataAtual = new Date().getFullYear();
     return (React.createElement("div", null,
-        React.createElement("footer", { className: "w-auto p-4 bottom-0 h-auto relative bg-gray-600 " },
+        React.createElement("footer", { className: "w-auto pb-4 bottom-0 h-auto relative bg-gray-600 " },
             React.createElement("div", { className: "lg:flex  lg:mt-3 md:mx-12 lg:mx-24 lg:justify-between" },
                 React.createElement("div", { className: "mb-4 lg:columns-1 w-96" },
                     React.createElement("p", { className: "text-white font-bold mb-1 mt-3" }, "About Us"),
