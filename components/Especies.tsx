@@ -1,64 +1,52 @@
-import { useContext, useEffect, useRef, useState } from "react"
-import { Link } from "../../components/Link"
-import { Input } from "../../components/atoms/input"
-import { TrashIcon as TrashIconOut, PencilAltIcon as PencilAltIconOut
-} from '@heroicons/react/outline'
+import { useCallback, useContext, useEffect, useRef, useState } from "react"
+import { Link } from "../components/Link"
+import { Input } from "../components/atoms/input"
 import { TrashIcon, PencilAltIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
-import { GetServerSideProps } from "next"
-import alertService from '../../services/alert'
-import Modal from "../../components/Modal"
-import withAuthentication from "../../components/withAuthentication"
-import especieService, { EspecieType } from "../../services/especie"
-import { AuthContext } from "../../contexts/AuthContext"
-import { FormInput } from "../../components/FormInput"
+import alertService from '../services/alert'
+import Modal from "../components/Modal"
+import { AuthContext } from "../contexts/AuthContext"
+import { CategoriaEspecieType } from "./Categorias"
 
-const EspecieIndex = () => {
-    const [especies, setEspecies] = useState<EspecieType[]>([])
-    const [filteredEspecies, setFilteredEspecies] = useState<EspecieType[]>(especies)
+export type EspecieType = {
+    id: string;
+    nome: string;
+    nomeOrgao: string;
+    nomeCientifico: string;
+    categoria?: CategoriaEspecieType
+}
+
+const Especies = ({ currentEspecies, onPageChanged, orderBy, order, changeItemsPerPage, currentPage, perPage, loading, loadEspecies }: any) => {
+    
+    const [filteredEspecies, setFilteredEspecies] = useState<EspecieType[]>(currentEspecies)
     const [selectedEspecie, setSelectedEspecie] = useState<EspecieType>()
     const [uploading, setUploading] = useState<boolean>(false)
     const [openModal, setOpenModal] = useState<boolean>(false)
     const { client } = useContext(AuthContext)
-    const [isLoading, setIsLoading] = useState(false)
     const fileRef = useRef(null) as any
     const [sorted, setSorted] = useState(false)
-    // const formOptions = { resolver: yupResolver(validationSchema) }
-    // const { register, handleSubmit, reset, formState: { errors }, getValues, setValue } = useForm()
-    
-    const loadEspecies = async () => {
-        setIsLoading(true)
-        const { data: { especies } } = await client.get(`/especie?search=`)
-        setEspecies(especies)
-        setFilteredEspecies(especies)
-        setIsLoading(false)
-    }
+    const [checkedEspecies, setCheckedEspecies] = useState<any>([])
 
     useEffect(() => {
-        loadEspecies()
-    }, [])
+        setFilteredEspecies(currentEspecies)
+    }, [currentEspecies, currentPage])
 
-    function toogleDeleteModal(id: string) {
-        const especie = especies.filter((especie: EspecieType) => especie.id === id)
-        setSelectedEspecie(especie[0])
+    function selectToModal(id: string) {
+        const especie = currentEspecies.find((especie: EspecieType) => especie.id === id)
+        setSelectedEspecie(especie)
         setOpenModal(true)
     }
 
     async function deleteEspecie(id: string) {
         try {
-            client.delete(`/especie/${id}`)
+            client.delete(`/especie/single/${id}`)
                 .then(() => {
                     alertService.success('A espécie foi deletada com SUCESSO!!!')
                     loadEspecies()
                     setOpenModal(false)
                 })
-            // setespecies(especies.filter((especie: especieType) => especie.id !== id))
-            
         } catch (error) {
             console.log(error)
         }       
-    }
-    function hideModal() {
-        setOpenModal(false)
     }
 
     const handleImportEspecies = async (e: any) => {
@@ -74,9 +62,7 @@ const EspecieIndex = () => {
         } else {
             setUploading(false)    
         }
-
         setUploading(false)
-        
     }
 
     const openFile = () => {
@@ -85,37 +71,58 @@ const EspecieIndex = () => {
     }
 
     const handleSearch = async (query: string) => {
-        setIsLoading(true)
-        const filteredEspecies = especies.filter((especie: any) => especie.nome.toLowerCase().indexOf(query.toLowerCase()) > -1);
-        setFilteredEspecies(filteredEspecies)
-        setIsLoading(false)
+        const paginatedData = {
+            currentPage: 1,
+            perPage,
+            orderBy,
+            order,
+            search: query
+        }
+        onPageChanged(paginatedData)
     }
 
-    const sortEspecies = (sortby?: string) => {
-        let sortedEspecies: any = []
-
-        switch (sortby) {
-            case 'categoria': {
-                sortedEspecies = filteredEspecies.sort((a: any, b: any) => {
-                    
-                    return sorted
-                        ? a.categoria?.nome.toLowerCase().localeCompare(b.categoria?.nome.toLowerCase())
-                        : b.categoria?.nome.toLowerCase().localeCompare(a.categoria?.nome.toLowerCase());
-                })
-                
-                }
-            break;
-            default: {
-                sortedEspecies = filteredEspecies.sort((a: any, b: any) => {
-                    return sorted
-                        ? a.nome.toLowerCase().localeCompare(b.nome.toLowerCase())
-                        : b.nome.toLowerCase().localeCompare(a.nome.toLowerCase());
-                })
-            }               
+    const sortEspecies = async (orderBy?: string) => {
+        const paginatedData = {
+            currentPage,
+            perPage,
+            orderBy,
+            order: !sorted ? 'DESC' : 'ASC'
         }
+
+        onPageChanged(paginatedData)
         setSorted(!sorted)
-        setFilteredEspecies(sortedEspecies)
-        
+    }
+
+    const handleSelectEspecie = (evt: any) => {
+        const especieId = evt.target.value
+
+        if (!checkedEspecies.includes(especieId)) {
+            setCheckedEspecies([...checkedEspecies, especieId])
+        } else {
+            setCheckedEspecies(checkedEspecies.filter((checkedEspecieId: any) => {
+                return checkedEspecieId !== especieId
+            }))
+        }
+    }
+
+    const handleSelectAllEspecies = () => {
+        if (checkedEspecies.length < currentEspecies.length) {
+            setCheckedEspecies(currentEspecies.map(({ id }: any) => id));
+        } else {
+            setCheckedEspecies([]);
+        }
+    };
+
+    const deleteEspecies = () => {
+        try {
+            client.delete('/especie/multiples', { data: { ids: checkedEspecies} })
+                .then(() => {
+                    alertService.success('As espécies foram deletadas com SUCESSO!!!')
+                    loadEspecies()
+                })
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     return (
@@ -148,9 +155,25 @@ const EspecieIndex = () => {
                     Adicionar
                 </Link>
             </div>
-            {isLoading ? (<div className="flex flex-row items-center justify-center h-56">Loading...</div>) : (
+            {loading ? (<div className="flex flex-row items-center justify-center h-56">Loading...</div>) : (
                 <div className="flex flex-col p-6">
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-items-center py-4 bg-gray-100 rounded-lg">
+                        <div className="flex flex-row w-2/12 px-2 items-center justify-between">
+                            <div className="w-full">
+                                <label htmlFor="perPage" className="px-1 block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400">por Página</label>
+                            </div>
+                            <select
+                                value={perPage}
+                                onChange={(evt: any) => changeItemsPerPage(evt.target.value)}
+                                id="perPage" 
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            >
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </div>
                         <div className="w-60 px-4">Pesquisar Espécie:</div>
                         <div className="w-full px-4">
                             <Input
@@ -166,14 +189,33 @@ const EspecieIndex = () => {
                         </div>
                     </div>
                     <div className="flex flex-row items-center justify-between overflow-x-auto mt-2">
-                    <div className="shadow overflow-y-auto h-screen border-b border-gray-200 w-full sm:rounded-lg">
+                        <div className="shadow overflow-y-auto border-b border-gray-200 w-full sm:rounded-lg">
+                            {checkedEspecies?.length > 0 && (
+                                <div className="py-4">
+                                    <button
+                                        className="px-4 py-2 bg-red-600 text-white rounded-md"
+                                        onClick={deleteEspecies}
+                                    >
+                                        Deletar
+                                    </button>
+                                </div>
+                            )}
                     <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                         <tr>
+                        <th>
+                            <div className="flex justify-center">
+                            <input  
+                                checked={checkedEspecies?.length === currentEspecies?.length}
+                                onChange={handleSelectAllEspecies}                
+                                className="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="checkbox" value="" id="flexCheckDefault"
+                            />
+                            </div>
+                        </th>
                         <th
                             scope="col"
-                            className="flex flex-row items-center w-4/12 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            onClick={() => sortEspecies()}
+                            className="flex flex-row items-center w-3/12 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            onClick={() => sortEspecies('especie.nome')}
                         >
                             Nome
                         {sorted
@@ -197,7 +239,7 @@ const EspecieIndex = () => {
                         <th
                             scope="col"
                             className="flex flex-row items-center w-auto px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                            onClick={() => sortEspecies('categoria')}
+                            onClick={() => sortEspecies('categoria.nome')}
                         >
                         Categoria
                         {sorted
@@ -211,8 +253,18 @@ const EspecieIndex = () => {
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {filteredEspecies.map((especie: any) => (
-                        <tr key={especie.id}>
+                        {filteredEspecies?.map((especie: any) => (
+                            <tr key={especie.id}>
+                            <td className="flex justify-center">
+                            <input                 
+                                    value={especie?.id}
+                                    checked={checkedEspecies.includes(especie?.id)}
+                                    onChange={handleSelectEspecie}
+                                    id="especieId"
+                                    type="checkbox"
+                                    className="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
+                                />    
+                            </td>
                             <td className="px-3 py-2 whitespace-nowrap">
                             <div className="flex flex-col items-starter">
                                 
@@ -236,7 +288,7 @@ const EspecieIndex = () => {
                             <Link href={`/especie/update/${especie.id}`}>
                                 <PencilAltIcon className="w-5 h-5 ml-4 -mr-1 text-green-600 hover:text-green-700" />
                             </Link>
-                            <Link href="#" onClick={() => toogleDeleteModal(especie.id)}>
+                            <Link href="#" onClick={() => selectToModal(especie.id)}>
                                 <TrashIcon className="w-5 h-5 ml-4 -mr-1 text-red-600 hover:text-red-700" />
                             </Link>
                             </td>
@@ -245,26 +297,26 @@ const EspecieIndex = () => {
                     </tbody>
                     </table>
                 </div>
-                </div>
-                
-                {openModal &&
-                    <Modal
-                        className="w-full"
-                        styleButton="bg-red-600 hover:bg-red-700 focus:ring-red-500"
-                        title="Deletar espécie"
-                        buttonText="Deletar"
-                        bodyText={`Tem certeza que seja excluir a especie ${selectedEspecie?.nome}?`}
-                        data={selectedEspecie}
-                        parentReturnData={toogleDeleteModal}
-                        parentFunction={deleteEspecie}
-                        hideModal={hideModal}
-                        open={openModal}
-                    />}
-                </div>
-            )}
+            </div>
+            
+            {openModal &&
+                <Modal
+                    className="w-full"
+                    styleButton="bg-red-600 hover:bg-red-700 focus:ring-red-500"
+                    title="Deletar espécie"
+                    buttonText="Deletar"
+                    bodyText={`Tem certeza que seja excluir a especie ${selectedEspecie?.nome}?`}
+                    data={selectedEspecie}
+                    parentReturnData={selectToModal}
+                    parentFunction={deleteEspecie}
+                    hideModal={() => setOpenModal(false)}
+                    open={openModal}
+                />}
+            </div>
+        )}
             
     </div>
     )
 }
 
-export default withAuthentication(EspecieIndex)
+export default Especies

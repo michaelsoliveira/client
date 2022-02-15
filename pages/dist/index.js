@@ -43,15 +43,8 @@ var image_1 = require("next/image");
 var react_2 = require("next-auth/react");
 var Tabs_1 = require("../components/Tabs");
 var Logo_1 = require("../components/Logo");
-var styles = {
-    label: 'block text-gray-700 text-sm font-bold pt-2 pb-1',
-    field: 'text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none',
-    button: ' bg-green-600 text-white font-bold py-2 px-4 rounded hover:bg-green-500',
-    errorMsg: 'text-red-500 text-sm'
-};
 function Dashboard(_a) {
     var localSession = _a.localSession;
-    var _b = react_1.useState(false), showLogin = _b[0], setShowLogin = _b[1];
     var client = react_1.useContext(AuthContext_1.AuthContext);
     return (React.createElement("div", { className: "min-h-full" },
         React.createElement("div", { className: "relative flex flex-row overflow-hidden" },
@@ -64,11 +57,13 @@ function Dashboard(_a) {
                                 ' ',
                                 React.createElement("span", { className: "block text-green-600 xl:inline" }, "Invent\u00E1rio Florestal")),
                             React.createElement("p", { className: "font-roboto mt-3 text-justify text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-lg lg:mx-0 mb-4" }, "O setor florestal brasileiro precisa \u2013 e demanda \u2013 de softwares que agilizem e aprimorem o processo de planejamento florestal, auxiliando na sele\u00E7\u00E3o de \u00E1rvores de corte com base em crit\u00E9rios claros, proporcionando melhor controle sobre a produ\u00E7\u00E3o de madeira e possibilitando o manejo florestal sustent\u00E1vel.")),
-                        React.createElement("div", { className: 'w-full' }, !localSession ? (React.createElement(Tabs_1["default"], null)) : (React.createElement("div", { className: "mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start" },
-                            React.createElement("div", { className: "rounded-md shadow" },
-                                React.createElement("a", { href: "#", className: "w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 md:py-4 md:text-lg md:px-10" }, "Iniciar")),
-                            React.createElement("div", { className: "mt-3 sm:mt-0 sm:ml-3" },
-                                React.createElement("a", { href: "#", className: "w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-green-700 bg-green-100 hover:bg-green-200 md:py-4 md:text-lg md:px-10", onClick: function () { } }, "Tutorial")))))))),
+                        React.createElement("div", { className: 'w-full' }, !localSession
+                            ? (React.createElement(Tabs_1["default"], null))
+                            : (React.createElement("div", { className: "mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start" },
+                                React.createElement("div", { className: "rounded-md shadow" },
+                                    React.createElement("a", { href: "#", className: "w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 md:py-4 md:text-lg md:px-10" }, "Iniciar")),
+                                React.createElement("div", { className: "mt-3 sm:mt-0 sm:ml-3" },
+                                    React.createElement("a", { href: "#", className: "w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-green-700 bg-green-100 hover:bg-green-200 md:py-4 md:text-lg md:px-10", onClick: function () { } }, "Tutorial")))))))),
             React.createElement("div", { className: "hidden lg:ml-0 lg:flex mt-6 lg:flex-col lg:items-center lg:inset-y-0 my-auto mr-20 rounded-tr-xl\n                lg:pr-20 lg:w-3/5 xl:w-2/5 bg-gradient-to-tr from-white via-white to-green-500" },
                 React.createElement("div", { className: 'flex flex-row' },
                     React.createElement("div", { className: 'relative mb-10 pt-8' },

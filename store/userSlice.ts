@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
 
-import AuthService from "../services/user"
+import authService from "../services/user"
 
 import type { UserData } from "../services/user"
 import { useDispatch } from "react-redux"
@@ -13,28 +13,28 @@ export const HTTP_STATUS = Object.freeze({
 })
 
 interface UserState {
-    loading: string | null;
+    loading?: string;
     data: {
-        username: string | null;
-        email: string | null;
-        password: string | null;
+        username?: string;
+        email?: string;
+        password?: string;
     };
-    errorMessage: string | null
+    errorMessage?: string
 }
 
 const initialState: UserState = {
-    loading: null,
+    loading: '',
     data: {
-        username: null,
-        email: null,
-        password: null
+        username: '',
+        email: '',
+        password: ''
     },
-    errorMessage: null
+    errorMessage: ''
 }
 
 export const create = createAsyncThunk('user/create', async (dataRequest: UserData, thunkAPI) => {
     try {
-        const { data, error, errorMessage } = await AuthService.create(dataRequest) as any
+        const { data, error, errorMessage } = await authService.create(dataRequest) as any
         
         if (error) {
             return thunkAPI.rejectWithValue({ errorMessage })

@@ -38,7 +38,7 @@ export const projectSlice = createSlice({
 
         },
         reset: (state) => {
-            
+            state = initialState
         }
     }
 })

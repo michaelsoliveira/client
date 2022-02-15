@@ -1,146 +1,90 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { Fragment, useContext } from 'react'
+import { Fragment, SVGProps, useCallback, useContext, useEffect, useState } from 'react'
 import { Disclosure, Menu, Transition, Popover } from '@headlessui/react'
 import { Link } from './Link'
 import Logo from './Logo'
-import { useSession, signOut } from 'next-auth/react'
-
-import {
-    BookmarkAltIcon,
-    CalendarIcon,
-    ChartBarIcon,
-    CursorClickIcon,
-    MenuIcon,
-    PhoneIcon,
-    PlayIcon,
-    RefreshIcon,
-    ShieldCheckIcon,
-    SupportIcon,
-    ViewGridIcon,
-    XIcon,
-    BellIcon,
-    ClipboardListIcon
-} from '@heroicons/react/outline'
+import { useSession, signOut, getSession } from 'next-auth/react'
+import { MenuIcon, XIcon, BellIcon } from '@heroicons/react/outline'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
 import { AuthContext } from '../contexts/AuthContext2'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
+import { GetServerSideProps } from 'next'
+import classNames from 'classnames'
+
+type SubMenuType = {
+        name?: string,
+        description?: string,
+        href?: string,
+        icon?: (props: SVGProps<SVGSVGElement>) => JSX.Element
+    }
+    type NavigationType = {
+        name: string,
+        href: string,
+        current: boolean,
+        visible: boolean,
+        subMenu: boolean,
+        subMenuItems?: SubMenuType[]
+    }
 
 
-const callsToAction = [
-  { name: 'Watch Demo', href: '#', icon: PlayIcon },
-  { name: 'Contact Sales', href: '#', icon: PhoneIcon },
-]
+// function classNames(...classes: any[]) {
+//   return classes.filter(Boolean).join(' ')
+// }
 
-function classNames(...classes: any[]) {
-  return classes.filter(Boolean).join(' ')
-}
-
-export default function Navigation() {
-    // const { isAuthenticated, loggedUser, signOut } = useContext(AuthContext)
-
-    const { data: session } = useSession()
+export default function Navigation({ session, defaultNavigation, userNavigation }: any) {
+    // const { data: session, status } = useSession()
     const router = useRouter()
 
-    async function logout() {
-        signOut()
-        router.push('/')
-    }
+    const [navigation, setNavigation] = useState<NavigationType[]>([])
 
-    const resources = [
-    {
-        name: 'Empresa',
-        description: 'Informações da Empresa',
-        href: '/empresa',
-        icon: ClipboardListIcon,
-    },
-    {
-        name: 'UMF',
-        description: 'Unidade de Manejo Florestal',
-        href: '#',
-        icon: SupportIcon,
-    },
-    {
-        name: 'UPA',
-        description: 'Unidade de Produção Anual',
-        href: '#',
-        icon: BookmarkAltIcon,
-    },
-    {
-        name: 'UT',
-        description: 'Unidade de Trabalho',
-        href: '#',
-        icon: CalendarIcon,
-        },
-    {
-        name: 'Especies',
-        description: 'Espécies Existentes',
-        href: '/especie',
-        icon: ClipboardListIcon,
-        subResource: [
-            {
-                name: 'Categoria de Espécies',
-                description: 'Categoria de Espécies',
-                href: '/categoria-especie',
-                icon: ClipboardListIcon,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const changeCurrentParent = (key: any, href?: string) =>  {
+        
+        const changeCurrentNav = defaultNavigation.map((nav: any, index: any) => {
+            if (key !== index) {
+                return {
+                    ...nav,
+                    current: false
+                }
+            } else {
+                return {
+                    ...nav,
+                    current: true
+                }
             }
-        ]
-    },
-    {
-        name: 'Categoria de Espécies',
-        description: 'Categoria de Espécies',
-        href: '/categoria-especie',
-        icon: ClipboardListIcon,
+            
+        })
+        
+        setNavigation(changeCurrentNav)
+        if (href) router.push(href)
     }
+
+    const checkCurrentNavigation = useCallback(() => {
+            
+            defaultNavigation?.map((nav: any, indexParent: number) => {
+                if (nav?.subMenuItems) {
+                    if (router.pathname === nav.href) {
+                        return changeCurrentParent(indexParent)
+                    }
+                    nav.subMenuItems?.map((subMenu: any, index: number) => {
+                        if (router.pathname === subMenu.href) {
+                            return changeCurrentParent(indexParent)
+                        }
+                    })
+                }
+            })
+        
+    }, [changeCurrentParent, defaultNavigation, router.pathname])
     
-    ]
-    const recentPosts = [
-    { id: 1, name: 'Boost your conversion rate', href: '#' },
-    { id: 2, name: 'How to use search engine optimization to drive traffic to your site', href: '#' },
-    { id: 3, name: 'Improve your customer experience', href: '#' },
-    ]
 
-    const solutions = [
-    {
-        name: 'Analytics',
-        description: 'Get a better understanding of where your traffic is coming from.',
-        href: '#',
-        icon: ChartBarIcon,
-    },
-    {
-        name: 'Engagement',
-        description: 'Speak directly to your customers in a more meaningful way.',
-        href: '#',
-        icon: CursorClickIcon,
-    },
-    { name: 'Security', description: "Your customers' data will be safe and secure.", href: '#', icon: ShieldCheckIcon },
-    {
-        name: 'Integrations',
-        description: "Connect with third-party tools that you're already using.",
-        href: '#',
-        icon: ViewGridIcon,
-    },
-    {
-        name: 'Automations',
-        description: 'Build strategic funnels that will drive your customers to convert',
-        href: '#',
-        icon: RefreshIcon,
-    },
-    ]
+    useEffect(() => {
+        setNavigation(defaultNavigation)
+        if (session) {
+            checkCurrentNavigation()
+        }
+    }, [session])
 
-    const navigation = [
-        { name: 'Dashboard', href: '/', current: true, visible: true, subMenu: false, subMenuItems: [] },
-        { name: 'Cadastro', href: '#', current: false, visible: !!session, subMenu: true, subMenuItems: resources },
-        { name: 'Soluções', href: '#', current: false, visible: true, subMenu: true, subMenuItems: solutions },
-        { name: 'Planejamento', href: '#', current: false, visible: !!session, subMenuItems: [] },
-        { name: 'Relatórios', href: '#', current: false, visible: !!session, subMenu: false, subMenuItems: [] }
-    ]
-
-    const userNavigation = [
-        { name: 'Perfil', href: '#' },
-        { name: 'Alterar Senha', href: '/user/change-password' },
-        { name: 'Logout', href: '#', click: () => signOut() },
-    ]
     return (
         <Disclosure as="nav" className="bg-white shadow">
           {({ open }) => (
@@ -154,26 +98,40 @@ export default function Navigation() {
                     <div className="hidden md:block">
                       <div className="ml-10 flex items-baseline space-x-4">
 
-                    {navigation.map((item, key) => (
+                    {navigation?.map((item: any, key: any) => (
                         item.visible && (!item.subMenu  ?
-                        (<Link
+                        (<a
                             key={key}
-                            href={item.href}
-                            className={classNames(
-                              item.current
+                                href={item.href}
+                                onClick={(evt: any) => {
+                                    evt.preventDefault()
+                                    changeCurrentParent(key, item.href)
+                                }}
+                                className={classNames(
+                                item.current
                                 ? 'border-b-2 border-green-700 text-gray-700 bg-gray-100'
                                 : 'text-gray-700 hover:border-b-2 hover:border-green-700 hover:text-green-800 transition duration-500 ease-in-out hover:bg-gray-200 transform hover:-translate-y-1 hover:scale-105',
                               'px-6 py-2 text-sm font-medium hover:bg-gray-100 in-line flex'
                             )}
-                            aria-current={item.current ? 'page' : undefined}
+                                aria-current={item.current ? 'page' : undefined}
                           >
-                            {item.name}
-                        </Link>) :
-                        (<Menu as="div" className="relative inline-block text-left" key={key}>
+                                {item.name}
+                        </a>) :
+                            (<Menu
+                                onClick={(evt: any) => {
+                                    evt.preventDefault()
+                                    changeCurrentParent(key)
+                                }}
+                                as="div" className={classNames(
+                                item?.current
+                                && 'border-b-2 border-green-700 text-gray-700 bg-gray-100',
+                                "relative inline-block text-left")} key={key}>
                             {({ open }) => (
                         <>
                         <div>
-                        <Menu.Button className="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-gray-700 hover:border-b-2 hover:border-green-700 hover:text-green-800 transition duration-500 ease-in-out hover:bg-gray-200 transform hover:-translate-y-1 hover:scale-105">
+                        <Menu.Button className={classNames(
+                            !item?.current && 'hover:border-b-2 hover:border-green-700 hover:text-green-800',
+                                "inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-gray-700  transition duration-500 ease-in-out hover:bg-gray-200 transform hover:-translate-y-1 hover:scale-105")}>
                             {item.name}
                             <ChevronDownIcon
                                 className={classNames(
@@ -194,22 +152,24 @@ export default function Navigation() {
                             leaveFrom="transform opacity-100 scale-100"
                             leaveTo="transform opacity-0 scale-95"
                         >
-                        <Menu.Items className="z-30 absolute w-96 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                            {item.subMenuItems.map((subMenu, key) =>
+                        <Menu.Items className={classNames(
+                            "z-30 absolute w-96 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none")}>
+                            {item.subMenuItems?.map((subMenu: any, key: any) =>
                             (<div className='px-2 py-2' key={key}>
                                 <Menu.Item key={key}>
                                     {({ active }) => (
                                         <Link
-                                            href={subMenu.href}
+                                            href={subMenu?.href}
                                             className={classNames(
                                                 active ? 'bg-gray-100' : 'text-gray-800',
+                                                router.pathname === subMenu?.href && 'bg-gray-100',
                                                 'group flex rounded-md items-center w-full px-2 py-2 text-sm'
                                             )}
                                         >
                                             {subMenu?.icon && (
                                                 <subMenu.icon className="flex-shrink-0 h-6 w-6 text-green-700" aria-hidden="true" />
                                             )}
-                                            <div className="ml-4">
+                                            <div className="ml-4" aria-hidden="true">
                                                 <p className="text-base font-medium text-gray-900">{subMenu.name}</p>
                                                 {subMenu?.description && (
                                                     <p className="mt-1 text-sm text-gray-500">{subMenu?.description}</p>
@@ -227,10 +187,8 @@ export default function Navigation() {
     
             </Menu>
             ))))
-                
             }
             </div>
-                        
             </div>
                 <div className='hidden md:block'>
                     {!session && (
@@ -273,7 +231,7 @@ export default function Navigation() {
                         leaveTo="transform opacity-0 scale-95"
                     >
                         <Menu.Items className="origin-top-right absolute z-20 right-0 mt-2 w-48 shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                        {userNavigation.map((item, key) => (
+                        {userNavigation.map((item: any, key: any) => (
                             <Menu.Item key={key}>
                             {({ active }) => (
                                 <a
@@ -364,14 +322,15 @@ export default function Navigation() {
                             leaveTo="transform opacity-0 scale-95"
                         >
                         <Popover.Panel className="z-30 relative lg:right-0 w-full mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                            {item.subMenuItems.map((subMenu, key) =>
-                            (<div className='px-2 py-2' key={key}>
+                            {item.subMenuItems?.map((subMenu, key) =>
+                            (<div className='px-2 py-2' key={key} aria-hidden="true">
                                 <Link
                                     href={subMenu.href}
                                     className={classNames(
                                         'hover:bg-gray-100',
                                         'group flex rounded-md items-center w-full px-2 py-2 text-sm'
                                     )}
+                                    aria-hidden="true"
                                 >
                                     {subMenu?.icon && (
                                         <subMenu.icon className="flex-shrink-0 h-6 w-6 text-green-700" aria-hidden="true" />
@@ -414,14 +373,15 @@ export default function Navigation() {
                     <BellIcon className="h-6 w-6" aria-hidden="true" />
                     </button>
                 </div>
-                <div className="mt-3 px-2 space-y-1">
-                    {userNavigation.map((item, key) => (
+                <div className="mt-3 px-2 space-y-1" aria-hidden="true">
+                    {userNavigation.map((item: any, key: any) => (
                     <Link
                         key={key}
                         as="a"
                         href={item.href}
                         className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-white hover:bg-green-700"
                         onClick={item.click}
+                        aria-hidden="true"
                     >
                         {item.name}
                     </Link>

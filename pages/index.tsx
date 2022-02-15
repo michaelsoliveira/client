@@ -12,18 +12,8 @@ import { getSession, useSession } from 'next-auth/react'
 import Tabs from '../components/Tabs'
 import Logo from '../components/Logo'
 
-const styles = {
-  label: 'block text-gray-700 text-sm font-bold pt-2 pb-1',
-  field:
-    'text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none',
-  button:
-    ' bg-green-600 text-white font-bold py-2 px-4 rounded hover:bg-green-500',
-  errorMsg: 'text-red-500 text-sm',
-}
-
 export default function Dashboard({ localSession }: any) {
   
-  const [showLogin, setShowLogin] = useState(false)
   const client = useContext(AuthContext)
 
   return (
@@ -48,33 +38,31 @@ export default function Dashboard({ localSession }: any) {
               </div>
               
             <div className='w-full'>
-              {
-                  !localSession ? (
-                    <Tabs />
-                  ) : (
-                  <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
-                    <div className="rounded-md shadow">
-                      <a
-                        href="#"
-                        className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 md:py-4 md:text-lg md:px-10"
-                      >
-                        Iniciar
-                      </a>
-                    </div>
-                    <div className="mt-3 sm:mt-0 sm:ml-3">
-                      <a
-                        href="#"
-                        className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-green-700 bg-green-100 hover:bg-green-200 md:py-4 md:text-lg md:px-10"
-                        onClick={() => {}}    
-                      >
-                        Tutorial
-                      </a>
-                    </div>
+              {!localSession
+                ? (<Tabs />)
+                : (<div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
+                  <div className="rounded-md shadow">
+                    <a
+                      href="#"
+                      className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 md:py-4 md:text-lg md:px-10"
+                    >
+                      Iniciar
+                    </a>
                   </div>
-                )
-              }   
-              </div>
+                  <div className="mt-3 sm:mt-0 sm:ml-3">
+                    <a
+                      href="#"
+                      className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-green-700 bg-green-100 hover:bg-green-200 md:py-4 md:text-lg md:px-10"
+                      onClick={() => {}}    
+                    >
+                      Tutorial
+                    </a>
+                  </div>
+                </div>
+              )
+            }   
             </div>
+          </div>
           
         </div>
       </div>
@@ -112,7 +100,7 @@ export default function Dashboard({ localSession }: any) {
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
   const session = await getSession(ctx)
-
+  
   return {
     props: {
       localSession: session

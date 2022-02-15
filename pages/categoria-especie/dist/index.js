@@ -49,88 +49,79 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var react_1 = require("react");
 var withAuthentication_1 = require("../../components/withAuthentication");
-var Especies_1 = require("../../components/Especies");
 var Pagination_1 = require("../../components/Pagination");
 var AuthContext_1 = require("../../contexts/AuthContext");
 var hooks_1 = require("../../store/hooks");
 var paginationSlice_1 = require("../../store/paginationSlice");
+var Categorias_1 = require("../../components/Categorias");
 var router_1 = require("next/router");
-var EspecieIndex = function () {
+var CategoriaIndex = function () {
     var client = react_1.useContext(AuthContext_1.AuthContext).client;
     var _a = react_1.useState(false), loading = _a[0], setLoading = _a[1];
     var _b = react_1.useState(1), currentPage = _b[0], setCurrentPage = _b[1];
     var _c = react_1.useState(10), itemsPerPage = _c[0], setItemsPerPage = _c[1];
     var _d = react_1.useState(0), totalItems = _d[0], setTotalItems = _d[1];
-    var _e = react_1.useState([]), currentEspecies = _e[0], setCurrentEspecies = _e[1];
+    var _e = react_1.useState([]), currentCategorias = _e[0], setCurrentCategorias = _e[1];
     var _f = react_1.useState(0), totalPages = _f[0], setTotalPages = _f[1];
-    var _g = react_1.useState('especie.nome'), orderBy = _g[0], setOrderBy = _g[1];
-    var _h = react_1.useState('ASC'), order = _h[0], setOrder = _h[1];
     var pagination = hooks_1.useAppSelector(function (state) { return state.pagination; });
     var dispatch = hooks_1.useAppDispatch();
     var router = router_1.useRouter();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    var loadEspecies = react_1.useCallback(function (itemsPerPage, currentPage) { return __awaiter(void 0, void 0, void 0, function () {
+    var loadCategorias = react_1.useCallback(function (itemsPerPage) { return __awaiter(void 0, void 0, void 0, function () {
         var currentPagePagination, data;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     setLoading(true);
-                    currentPagePagination = (pagination.name === router.pathname && pagination.currentPage) ? pagination.currentPage : 1;
+                    currentPagePagination = pagination.name === 'categoria' && pagination.currentPage ? pagination.currentPage : 1;
                     setCurrentPage(currentPagePagination);
-                    return [4 /*yield*/, client.get("/especie?page=" + (currentPage ? currentPage : currentPagePagination) + "&perPage=" + itemsPerPage + "&orderBy=" + orderBy + "&order=" + order)];
+                    return [4 /*yield*/, client.get("/categoria?page=" + currentPagePagination + "&perPage=" + itemsPerPage)];
                 case 1:
                     data = (_a.sent()).data;
                     setTotalItems(data === null || data === void 0 ? void 0 : data.count);
-                    setCurrentEspecies(data === null || data === void 0 ? void 0 : data.especies);
+                    setCurrentCategorias(data === null || data === void 0 ? void 0 : data.categorias);
                     setLoading(false);
                     return [2 /*return*/];
             }
         });
-    }); }, [client, order, orderBy, pagination.currentPage, pagination.name, router.pathname]);
+    }); }, []);
     react_1.useEffect(function () {
-        loadEspecies(itemsPerPage);
-    }, [itemsPerPage]);
+        loadCategorias(itemsPerPage);
+    }, []);
     var onPageChanged = function (paginatedData) { return __awaiter(void 0, void 0, void 0, function () {
-        var name, currentPage, perPage, totalPages, orderBy, order, search, data, data;
+        var name, currentPage, perPage, totalPages, search, data, data;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    name = paginatedData.name, currentPage = paginatedData.currentPage, perPage = paginatedData.perPage, totalPages = paginatedData.totalPages, orderBy = paginatedData.orderBy, order = paginatedData.order, search = paginatedData.search;
+                    name = paginatedData.name, currentPage = paginatedData.currentPage, perPage = paginatedData.perPage, totalPages = paginatedData.totalPages, search = paginatedData.search;
                     if (!search) return [3 /*break*/, 2];
-                    return [4 /*yield*/, client.get("/especie?page=" + currentPage + "&perPage=" + perPage + "&orderBy=" + orderBy + "&order=" + order + "&search=" + search.toLowerCase())];
+                    return [4 /*yield*/, client.get("/categoria?page=" + currentPage + "&perPage=" + perPage + "&search=" + search.toLowerCase())];
                 case 1:
                     data = (_a.sent()).data;
-                    paginatedData = __assign(__assign({ name: name }, paginatedData), { totalPages: Math.ceil((data === null || data === void 0 ? void 0 : data.count) / perPage), totalItems: data === null || data === void 0 ? void 0 : data.count });
+                    paginatedData = __assign(__assign({}, paginatedData), { totalPages: Math.ceil((data === null || data === void 0 ? void 0 : data.count) / perPage), totalItems: data === null || data === void 0 ? void 0 : data.count });
                     return [3 /*break*/, 4];
-                case 2: return [4 /*yield*/, client.get("/especie?page=" + currentPage + "&perPage=" + perPage + "&orderBy=" + orderBy + "&order=" + order)];
+                case 2: return [4 /*yield*/, client.get("/categoria?page=" + currentPage + "&perPage=" + perPage)];
                 case 3:
                     data = (_a.sent()).data;
-                    paginatedData = __assign(__assign({ name: name }, paginatedData), { totalPages: Math.ceil((data === null || data === void 0 ? void 0 : data.count) / perPage), totalItems: data === null || data === void 0 ? void 0 : data.count });
+                    paginatedData = __assign({ name: name }, paginatedData);
                     _a.label = 4;
                 case 4:
                     dispatch(paginationSlice_1.paginate(paginatedData));
                     setCurrentPage(currentPage);
-                    setItemsPerPage(perPage);
-                    setOrderBy(orderBy);
-                    setOrder(order);
                     setTotalItems(data === null || data === void 0 ? void 0 : data.count);
-                    setCurrentEspecies(data === null || data === void 0 ? void 0 : data.especies);
+                    setCurrentCategorias(data === null || data === void 0 ? void 0 : data.categorias);
                     setTotalPages(totalPages ? totalPages : Math.ceil((data === null || data === void 0 ? void 0 : data.count) / perPage));
                     return [2 /*return*/];
             }
         });
     }); };
-    var changeItemsPerPage = function (value) {
-        onPageChanged({
-            name: router.pathname,
-            currentPage: 1,
-            perPage: value,
-            orderBy: orderBy,
-            order: order
-        });
+    var changeItemsPerPage = function (perPage) {
+        var _a;
+        setItemsPerPage(perPage);
+        (_a = pagination.name === 'categoria') !== null && _a !== void 0 ? _a : paginationSlice_1.setCurrentPagePagination(1);
+        loadCategorias(perPage);
     };
     return (React.createElement("div", null,
-        React.createElement(Especies_1["default"], { currentEspecies: currentEspecies, loading: loading, loadEspecies: loadEspecies, currentPage: currentPage, orderBy: orderBy, order: order, onPageChanged: onPageChanged, perPage: itemsPerPage, changeItemsPerPage: changeItemsPerPage }),
-        React.createElement(Pagination_1.Pagination, { perPage: itemsPerPage, totalItems: totalItems, orderBy: orderBy, order: order, currentPage: currentPage, onPageChanged: onPageChanged, pageNeighbours: 3 })));
+        React.createElement(Categorias_1["default"], { currentCategorias: currentCategorias, loading: loading, loadCategorias: function () { return loadCategorias(itemsPerPage); }, currentPage: currentPage, onPageChanged: onPageChanged, perPage: itemsPerPage, changeItemsPerPage: changeItemsPerPage }),
+        React.createElement(Pagination_1.Pagination, { perPage: itemsPerPage, totalItems: totalItems, currentPage: currentPage, onPageChanged: onPageChanged, pageNeighbours: 3 })));
 };
-exports["default"] = withAuthentication_1["default"](EspecieIndex);
+exports["default"] = withAuthentication_1["default"](CategoriaIndex);
