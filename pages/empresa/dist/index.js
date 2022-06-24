@@ -144,11 +144,13 @@ var EmpresaIndex = function () {
                             React.createElement("td", { className: "px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex flex-row items-center" },
                                 React.createElement(Link_1.Link, { href: "/empresa/update/" + empresa.id },
                                     React.createElement(solid_1.PencilAltIcon, { className: "w-5 h-5 ml-4 -mr-1 text-green-600 hover:text-green-700" })),
+                                React.createElement(Link_1.Link, { href: "/empresa/" + empresa.id + "/users" },
+                                    React.createElement(solid_1.UsersIcon, { className: "w-5 h-5 ml-4 -mr-1 text-indigo-600 hover:text-indigo-700" })),
                                 React.createElement(Link_1.Link, { href: "#", onClick: function () { return toogleDeleteModal(empresa.id); } },
                                     React.createElement(solid_1.TrashIcon, { className: "w-5 h-5 ml-4 -mr-1 text-red-600 hover:text-red-700" }))))); })))))) : (React.createElement("div", { className: "flex flex-col items-center justify-center h-64" },
                 React.createElement("h1", { className: "font-roboto text-2xl font-medium" }, "Nenhuma Empresa Cadastrada")))),
             openModal &&
-                React.createElement(Modal_1["default"], { styleButton: "bg-red-600 hover:bg-red-700 focus:ring-red-500", title: "Deletar Empresar", buttonText: "Deletar", bodyText: "Tem certeza que seja excluir a empresa " + (selectedEmpresa === null || selectedEmpresa === void 0 ? void 0 : selectedEmpresa.razaoSocial) + "?", data: selectedEmpresa, parentReturnData: toogleDeleteModal, parentFunction: deleteEmpresa, hideModal: hideModal, open: openModal })))));
+                React.createElement(Modal_1["default"], { styleButton: "bg-red-600 hover:bg-red-700 focus:ring-red-500", title: "Deletar Empresar", buttonText: "Deletar", bodyText: "Tem certeza que seja excluir a empresa " + (selectedEmpresa === null || selectedEmpresa === void 0 ? void 0 : selectedEmpresa.razaoSocial) + "?", data: selectedEmpresa, parentFunction: deleteEmpresa, hideModal: function () { return setOpenModal(false); }, open: openModal })))));
 };
 exports.getServerSideProps = function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
     var session;

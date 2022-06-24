@@ -109,12 +109,12 @@ exports.Pagination = function (_a) {
                     evt.preventDefault();
                     if (currentPage > 1)
                         gotoPage(currentPage - 1);
-                }, className: "relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" }, "Previous"),
+                }, className: "relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" }, "Anterior"),
             React.createElement("a", { href: "#", onClick: function (evt) {
                     evt.preventDefault();
                     if (currentPage < totalPages)
                         gotoPage(currentPage + 1);
-                }, className: "ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" }, "Next")),
+                }, className: "ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" }, "Pr\u00F3xima")),
         React.createElement("div", { className: "hidden sm:flex-1 sm:flex sm:items-center sm:justify-between" },
             React.createElement("div", null,
                 React.createElement("p", { className: "text-sm text-gray-700" },

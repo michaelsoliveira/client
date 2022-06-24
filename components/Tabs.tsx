@@ -49,7 +49,7 @@ const Tabs = () => {
         <Tab.Panels className="mt-2">
             <Tab.Panel
               className={classNames(
-                'bg-white shadow-lg rounded-xl px-4 py-2',
+                'bg-white shadow-lg rounded-xl px-6 py-4',
                 // 'focus:outline-none focus:ring-2 ring-offset-2 ring-offset-green-600 ring-white ring-opacity-60'
               )}
           >
@@ -57,11 +57,11 @@ const Tabs = () => {
           </Tab.Panel>
           <Tab.Panel
               className={classNames(
-                'bg-white shadow-lg rounded-xl px-4 py-2',
+                'bg-white shadow-lg rounded-xl px-4 py-2 text-left',
                 // 'focus:outline-none focus:ring-2 ring-offset-2 ring-offset-green-600 ring-white ring-opacity-60'
               )}
             >
-              <RegisterForm styles={styles} />
+              <RegisterForm styles={styles} redirect={true}/>
             </Tab.Panel>
         </Tab.Panels>
       </Tab.Group>

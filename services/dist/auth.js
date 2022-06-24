@@ -72,7 +72,6 @@ function handleRefreshToken(token) {
                 case 0: return [4 /*yield*/, axios_1.apiClient().post('/auth/refresh', { token: token })];
                 case 1:
                     response = _a.sent();
-                    console.log(response.data);
                     return [2 /*return*/, response.data];
             }
         });

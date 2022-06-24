@@ -39,11 +39,11 @@ const Categorias = ({ currentCategorias, onPageChanged, changeItemsPerPage, curr
         setOpenModal(true)
     }
 
-    async function deleteCategoria(id: string) {
+    async function deleteCategoria(id?: string) {
         try {
             client.delete(`/categoria/${id}`)
                 .then(() => {
-                    alertService.success('A espécie foi deletada com SUCESSO!!!')
+                    alertService.success('A categoria de espécie foi deletada com SUCESSO!!!')
                     loadCategorias()
                     setOpenModal(false)
                 })
@@ -270,7 +270,7 @@ const Categorias = ({ currentCategorias, onPageChanged, changeItemsPerPage, curr
                                 </span>
                             </td>     
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex flex-row items-center">
-                                <Link href={`/categoria/update/${categoria.id}`}>
+                                <Link href={`/categoria-especie/update/${categoria.id}`}>
                                     <PencilAltIcon className="w-5 h-5 ml-4 -mr-1 text-green-600 hover:text-green-700" />
                                 </Link>
                                 <Link href="#" onClick={() => toogleDeleteModal(categoria.id)}>
@@ -292,7 +292,6 @@ const Categorias = ({ currentCategorias, onPageChanged, changeItemsPerPage, curr
                     buttonText="Deletar"
                     bodyText={`Tem certeza que seja excluir a Categoria ${selectedCategoria?.nome}?`}
                     data={selectedCategoria}
-                    parentReturnData={toogleDeleteModal}
                     parentFunction={deleteCategoria}
                     hideModal={() => setOpenModal(false)}
                     open={openModal}

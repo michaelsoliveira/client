@@ -1,4 +1,4 @@
-import Especie from "../../components/Especie";
+import Categoria from "../../components/Categoria";
 import withAuthentication from "../../components/withAuthentication";
 
-export default withAuthentication(Especie)
+export default withAuthentication(Categoria)

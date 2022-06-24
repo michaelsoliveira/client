@@ -1,6 +1,7 @@
 import axios from 'axios';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { useMemo } from 'react';
+// import { getSession } from 'next-auth/react'
 
 const useClient = (options?: any) => {
   const { data: session } = useSession();
@@ -9,7 +10,7 @@ const useClient = (options?: any) => {
 
   return useMemo(() => {
     const api = axios.create({
-      baseURL: 'http://localhost:3333',
+      baseURL: 'http://192.168.1.105:3333',
         headers: {
             Authorization: token ? `Bearer ${token}` : '',
             ...(options?.headers ? options.headers : {})
@@ -17,18 +18,18 @@ const useClient = (options?: any) => {
         
     });
     
-    // api.interceptors.response.use(response => {
-    //     return response
-    // }, error => {
-    //     const { status } = error.response
+    api.interceptors.response.use(response => {
+        return response
+    }, error => {
+        const { status } = error.response
         
-    //     if (status === 401) {
-    //         console.log(error.response)
-    //         return location.href = '/'
-    //     }
+        if (status === 401) {
+            signOut()
+            // return location.href = '/'
+        }
         
-    //     return Promise.reject(error)
-    // })
+        return Promise.reject(error)
+    })
           
     return api;
   }, [options, token]);

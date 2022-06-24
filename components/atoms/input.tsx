@@ -7,7 +7,7 @@ import React, {
 import classNames from 'classnames';
 
 export type InputSize = 'medium' | 'large';
-export type InputType = 'text' | 'email' | 'password';
+export type InputType = 'text' | 'email' | 'password' | 'number' | 'radio';
 
 export type InputProps = {
   id: string;

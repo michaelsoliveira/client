@@ -4,23 +4,21 @@ import type { AppProps } from 'next/app'
 import { AuthProvider } from '../contexts/AuthContext'
 import { Provider } from 'react-redux'
 import { store } from '../store'
-import { Router } from 'next/router'
+import { saveState } from '../store/browser-storage'
 import Layout from '../components/Layout'
 import { ToastContainer } from 'react-toastify';
 import { SessionProvider } from 'next-auth/react'
+import { debounce } from "debounce"
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   
-  // useEffect(() => {
-  //   window.fbAsyncInit = function() {
-  //     window.FB.init({
-  //       appId            : process.env.FACEBOOK_CLIENT_ID,
-  //       autoLogAppEvents : true,
-  //       xfbml            : true,
-  //       version          : 'v12.0'
-  //     });
-  //   };
-  // })
+  store.subscribe(
+    // we use debounce to save the state once each 800ms
+    // for better performances in case multiple changes occur in a short time
+    debounce(() => {
+      saveState(store.getState());
+    }, 800)
+  );
   
   return (
     <SessionProvider session={session}>

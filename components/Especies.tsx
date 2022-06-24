@@ -20,7 +20,8 @@ const Especies = ({ currentEspecies, onPageChanged, orderBy, order, changeItemsP
     const [filteredEspecies, setFilteredEspecies] = useState<EspecieType[]>(currentEspecies)
     const [selectedEspecie, setSelectedEspecie] = useState<EspecieType>()
     const [uploading, setUploading] = useState<boolean>(false)
-    const [openModal, setOpenModal] = useState<boolean>(false)
+    const [singleModel, setOpenSingleModal] = useState<boolean>(false)
+    const [removeMultipleModal, setOpenMultipleModal] = useState<boolean>(false)
     const { client } = useContext(AuthContext)
     const fileRef = useRef(null) as any
     const [sorted, setSorted] = useState(false)
@@ -33,16 +34,16 @@ const Especies = ({ currentEspecies, onPageChanged, orderBy, order, changeItemsP
     function selectToModal(id: string) {
         const especie = currentEspecies.find((especie: EspecieType) => especie.id === id)
         setSelectedEspecie(especie)
-        setOpenModal(true)
+        setOpenSingleModal(true)
     }
 
-    async function deleteEspecie(id: string) {
+    async function deleteEspecie(id?: string) {
         try {
             client.delete(`/especie/single/${id}`)
                 .then(() => {
                     alertService.success('A espécie foi deletada com SUCESSO!!!')
                     loadEspecies()
-                    setOpenModal(false)
+                    setOpenSingleModal(false)
                 })
         } catch (error) {
             console.log(error)
@@ -113,12 +114,14 @@ const Especies = ({ currentEspecies, onPageChanged, orderBy, order, changeItemsP
         }
     };
 
-    const deleteEspecies = () => {
+    const deleteEspecies = async () => {
         try {
-            client.delete('/especie/multiples', { data: { ids: checkedEspecies} })
+            await client.delete('/especie/multiples', { data: { ids: checkedEspecies} })
                 .then(() => {
+                    setCheckedEspecies([])
                     alertService.success('As espécies foram deletadas com SUCESSO!!!')
                     loadEspecies()
+                    setOpenMultipleModal(false)
                 })
         } catch (error) {
             console.log(error)
@@ -194,7 +197,7 @@ const Especies = ({ currentEspecies, onPageChanged, orderBy, order, changeItemsP
                                 <div className="py-4">
                                     <button
                                         className="px-4 py-2 bg-red-600 text-white rounded-md"
-                                        onClick={deleteEspecies}
+                                        onClick={() => setOpenMultipleModal(true)}
                                     >
                                         Deletar
                                     </button>
@@ -214,7 +217,7 @@ const Especies = ({ currentEspecies, onPageChanged, orderBy, order, changeItemsP
                         </th>
                         <th
                             scope="col"
-                            className="flex flex-row items-center w-3/12 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            className="flex flex-row items-center w-auto px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                             onClick={() => sortEspecies('especie.nome')}
                         >
                             Nome
@@ -299,7 +302,7 @@ const Especies = ({ currentEspecies, onPageChanged, orderBy, order, changeItemsP
                 </div>
             </div>
             
-            {openModal &&
+            {singleModel &&
                 <Modal
                     className="w-full"
                     styleButton="bg-red-600 hover:bg-red-700 focus:ring-red-500"
@@ -307,11 +310,22 @@ const Especies = ({ currentEspecies, onPageChanged, orderBy, order, changeItemsP
                     buttonText="Deletar"
                     bodyText={`Tem certeza que seja excluir a especie ${selectedEspecie?.nome}?`}
                     data={selectedEspecie}
-                    parentReturnData={selectToModal}
                     parentFunction={deleteEspecie}
-                    hideModal={() => setOpenModal(false)}
-                    open={openModal}
+                    hideModal={() => setOpenSingleModal(false)}
+                    open={singleModel}
                 />}
+            {removeMultipleModal &&
+            <Modal
+                className="w-full"
+                styleButton="bg-red-600 hover:bg-red-700 focus:ring-red-500"
+                title="Deletar UMFs"
+                buttonText="Deletar"
+                bodyText={`Tem certeza que seja excluir as ${checkedEspecies?.length} UMFs selecionados?`}
+                data={checkedEspecies}
+                parentFunction={deleteEspecies}
+                hideModal={() => setOpenMultipleModal(false)}
+                open={removeMultipleModal}
+            />}
             </div>
         )}
             

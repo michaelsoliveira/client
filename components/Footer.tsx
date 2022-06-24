@@ -3,27 +3,26 @@ const Footer = () => {
     const dataAtual = new Date().getFullYear()
     return (
         <div>
-            <footer className="w-auto pb-4 bottom-0 h-auto relative bg-gray-600 ">
-                <div className="lg:flex  lg:mt-3 md:mx-12 lg:mx-24 lg:justify-between">
+            <footer className="w-auto pb-4 bottom-0 h-auto relative bg-gray-100 ">
+                <div className="flex flex-col lg:flex-row mx-10 lg:mt-3 md:mx-12 lg:mx-16 lg:justify-between">
                     <div className="mb-4 lg:columns-1 w-96">
-                        <p className="text-white font-bold mb-1 mt-3">About Us</p>
-                        <p className="text-gray-200 text-sm text-justify">Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                            Lorem Ipsum has been the industry`s standard dummy text ever since the 1500s, when an
-                            unknown printer took a galley of type and scrambled it to make a type specimen book.
-                            It has survived not only five centuries
+                        <p className="text-gray-600 font-bold mb-1 mt-3">Sobre Nós</p>
+                        <p className="text-gray-500 text-sm text-justify">Este projeto é fruto do desenvolvimento de 
+                        uma pesquisa de mestrado do discente Michael Santos de Oliveira apresentado ao Programa de 
+                        Pós-graduação de Computação Aplicada da Universidade Federal do Pará - Campus Tucuruí
                         </p>
                     </div>
-                    <div className="mb-4  lg:mt-3">
-                        <h3 className="text-white font-bold mb-2 lg:mb-4">Social Media</h3>
+                    <div className="mb-4 lg:mt-3">
+                        <h3 className="text-gray-600 font-bold mb-2 lg:mb-4">Redes Sociais</h3>
                         <div className="">
-                            <div className=" flex lg:items-center ">
-                                <div className="lg:container lg:max-w-screen-lg ">
+                            <div className="flex lg:items-center ">
+                                <div className="lg:container lg:max-w-screen-lg">
                                     <div>
-                                        <div className="lg:flex lg:flex-wrap gap-2 ">
+                                        <div className="lg:flex lg:flex-wrap gap-2">
                                             
-                                            <a href="">
+                                            <a className="pr-1" href="">
                                                 <button
-                                                    className="bg-gray-700 hover:bg-white hover:text-black  p-2 font-semibold text-white inline-flex items-center space-x-2 rounded">
+                                                    className="bg-gray-300 hover:bg-white hover:text-black  p-2 font-semibold text-gray-00 inline-flex items-center space-x-2 rounded">
                                                     <svg xmlns="http://www.w3.org/2000/svg"
                                                         xmlnsXlink="http://www.w3.org/1999/xlink" aria-hidden="true"
                                                         role="img" className="w-5" preserveAspectRatio="xMidYMid meet"
@@ -36,7 +35,7 @@ const Footer = () => {
                                                     </svg>
                                                 </button>
                                             </a>
-                                            <a href="">
+                                            <a className="pr-1" href="">
                                                 <button
                                                     className="bg-blue-400 p-2 hover:bg-white hover:text-black font-semibold  text-white inline-flex items-center space-x-2 rounded">
                                                     <svg className="w-5 h-5 fill-current" role="img"
@@ -46,7 +45,7 @@ const Footer = () => {
                                                     </svg>
                                                 </button>
                                             </a>
-                                            <a href="">
+                                            <a className="pr-1" href="">
                                                 <button
                                                     className="bg-red-500 p-2 hover:bg-white hover:text-black font-semibold text-white inline-flex items-center space-x-2 rounded">
                                                     <svg className="w-5 h-5 fill-current" role="img" viewBox="0 0 24 24"
@@ -76,10 +75,10 @@ const Footer = () => {
                         </div>
                     </div>
                     <div className="lg:mt-3 mb-4">
-                        <h3 className="text-white font-bold mb-2 lg:mb-2">Navigate</h3>
+                        <h3 className="text-gray-600 font-bold mb-2 lg:mb-2">Links</h3>
                         <div className="flex flex-col columns-2 md:columns-3 lg:columns-2">
-                            <a className="text-gray-200" href="">Navigate 0</a>
-                            <a href="" className="text-gray-200">Navigate 1</a>
+                            <a className="text-gray-500" href="">UFPA</a>
+                            <a href="" className="text-gray-500">iFlorestas</a>
                         </div>
                     </div>
                 </div>

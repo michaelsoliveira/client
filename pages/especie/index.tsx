@@ -7,6 +7,7 @@ import { AuthContext } from "../../contexts/AuthContext"
 import { useAppDispatch, useAppSelector } from "../../store/hooks"
 import { paginate, setCurrentPagePagination } from "../../store/paginationSlice"
 import { useRouter } from "next/router"
+import { RootState } from "../../store"
 
 const EspecieIndex = () => {
     const { client } = useContext(AuthContext)
@@ -18,7 +19,7 @@ const EspecieIndex = () => {
     const [totalPages, setTotalPages] = useState(0)
     const [orderBy, setOrderBy] = useState('especie.nome')
     const [order, setOrder] = useState('ASC')
-    const pagination = useAppSelector((state) => state.pagination)
+    const pagination = useAppSelector((state: RootState) => state.pagination)
     const dispatch = useAppDispatch()
     const router = useRouter()
     
@@ -26,9 +27,12 @@ const EspecieIndex = () => {
     const loadEspecies = useCallback(async (itemsPerPage?: number, currentPage?: number) => {
         setLoading(true)
         const currentPagePagination = (pagination.name === router.pathname && pagination.currentPage) ? pagination.currentPage : 1
+        const perPage = itemsPerPage ? itemsPerPage : pagination.perPage
+        const url = `/especie?page=${currentPage ? currentPage : currentPagePagination}&perPage=${perPage}&orderBy=${orderBy}&order=${order}`
+
         setCurrentPage(currentPagePagination)
-        const { data } = await client.get(`/especie?page=${currentPage ? currentPage : currentPagePagination}&perPage=${itemsPerPage}&orderBy=${orderBy}&order=${order}`)
-        
+        const { data } = await client.get(url)
+
         setTotalItems(data?.count)
         setCurrentEspecies(data?.especies)
         setLoading(false)

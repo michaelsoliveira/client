@@ -18,6 +18,7 @@ interface UserState {
         username?: string;
         email?: string;
         password?: string;
+        empresaId?: string;
     };
     errorMessage?: string
 }
@@ -37,17 +38,17 @@ export const create = createAsyncThunk('user/create', async (dataRequest: UserDa
         const { data, error, errorMessage } = await authService.create(dataRequest) as any
         
         if (error) {
-            return thunkAPI.rejectWithValue({ errorMessage })
+            return thunkAPI.rejectWithValue({message: errorMessage})
         }
 
         return {
             data,
             error,
-            errorMessage
+            message: errorMessage
         }
                 
-    } catch (error: any) {
-        return thunkAPI.rejectWithValue(error.message)
+    } catch (error) {
+        return thunkAPI.rejectWithValue({error})
     }
 })
 

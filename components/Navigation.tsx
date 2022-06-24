@@ -5,7 +5,7 @@ import { Link } from './Link'
 import Logo from './Logo'
 import { useSession, signOut, getSession } from 'next-auth/react'
 import { MenuIcon, XIcon, BellIcon } from '@heroicons/react/outline'
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid'
+import { ChevronDownIcon, ChevronUpIcon, ChevronRightIcon } from '@heroicons/react/solid'
 import { AuthContext } from '../contexts/AuthContext2'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
@@ -16,6 +16,7 @@ type SubMenuType = {
         name?: string,
         description?: string,
         href?: string,
+        subMenuItems?: SubMenuType[],
         icon?: (props: SVGProps<SVGSVGElement>) => JSX.Element
     }
     type NavigationType = {
@@ -37,6 +38,19 @@ export default function Navigation({ session, defaultNavigation, userNavigation 
     const router = useRouter()
 
     const [navigation, setNavigation] = useState<NavigationType[]>([])
+    const [sticky, setSticky] = useState(false)
+
+    const handleScroll = () => {
+        if (scrollY > 72) {
+          setSticky(true);
+        } else if (scrollY < 72) {
+          setSticky(false);
+        }
+    }
+
+    useEffect(() => {
+        addEventListener('scroll', handleScroll)
+    })
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const changeCurrentParent = (key: any, href?: string) =>  {
@@ -62,12 +76,12 @@ export default function Navigation({ session, defaultNavigation, userNavigation 
 
     const checkCurrentNavigation = useCallback(() => {
             
-            defaultNavigation?.map((nav: any, indexParent: number) => {
+            defaultNavigation?.map((nav: NavigationType, indexParent: number) => {
                 if (nav?.subMenuItems) {
                     if (router.pathname === nav.href) {
                         return changeCurrentParent(indexParent)
                     }
-                    nav.subMenuItems?.map((subMenu: any, index: number) => {
+                    nav.subMenuItems?.map((subMenu: SubMenuType, index: number) => {
                         if (router.pathname === subMenu.href) {
                             return changeCurrentParent(indexParent)
                         }
@@ -86,14 +100,25 @@ export default function Navigation({ session, defaultNavigation, userNavigation 
     }, [session])
 
     return (
-        <Disclosure as="nav" className="bg-white shadow">
+        <Disclosure as="nav" className={classNames(
+                "lg:absolute items-center w-full opacity-100 z-50",
+            )}
+        >
           {({ open }) => (
             <>
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className={classNames(
+                "px-4 sm:px-6 lg:px-8 bg-gray-50 shadow z-50",
+                sticky ? 'lg:fixed w-full opacity-100 transition transition-ease duration-500 translate-y-0' : ''
+              )
+                }>
                 <div className="flex items-center justify-between h-16">
-                  <div className="flex items-center justify-between max-w-full w-full">
+                  <div className={classNames(
+                    "flex items-center justify-between max-w-full w-full"
+                  )}>
                     <div className="flex-shrink-0 lg:-mr-16">
-                        <Logo width='w-10' height='h-10' />
+                        <Link href="/">
+                            <Logo width='w-10' height='h-10' />
+                        </Link>
                     </div>
                     <div className="hidden md:block">
                       <div className="ml-10 flex items-baseline space-x-4">
@@ -106,6 +131,7 @@ export default function Navigation({ session, defaultNavigation, userNavigation 
                                 onClick={(evt: any) => {
                                     evt.preventDefault()
                                     changeCurrentParent(key, item.href)
+                                    open = !open
                                 }}
                                 className={classNames(
                                 item.current
@@ -127,83 +153,158 @@ export default function Navigation({ session, defaultNavigation, userNavigation 
                                 && 'border-b-2 border-green-700 text-gray-700 bg-gray-100',
                                 "relative inline-block text-left")} key={key}>
                             {({ open }) => (
-                        <>
-                        <div>
-                        <Menu.Button className={classNames(
-                            !item?.current && 'hover:border-b-2 hover:border-green-700 hover:text-green-800',
-                                "inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-gray-700  transition duration-500 ease-in-out hover:bg-gray-200 transform hover:-translate-y-1 hover:scale-105")}>
-                            {item.name}
-                            <ChevronDownIcon
-                                className={classNames(
-                                    open ? 'text-green-700' : 'text-gray-400',
-                                    'w-5 h-5 ml-2 -mr-1'
-                                )}
-                                aria-hidden="true"
-                            />
-                            
-                        </Menu.Button>
-                        </div>
-                        <Transition
-                            as={Fragment}
-                            enter="transition ease-out duration-100"
-                            enterFrom="transform opacity-0 scale-95"
-                            enterTo="transform opacity-100 scale-100"
-                            leave="transition ease-in duration-75"
-                            leaveFrom="transform opacity-100 scale-100"
-                            leaveTo="transform opacity-0 scale-95"
-                        >
-                        <Menu.Items className={classNames(
-                            "z-30 absolute w-96 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none")}>
-                            {item.subMenuItems?.map((subMenu: any, key: any) =>
-                            (<div className='px-2 py-2' key={key}>
-                                <Menu.Item key={key}>
-                                    {({ active }) => (
-                                        <Link
-                                            href={subMenu?.href}
-                                            className={classNames(
-                                                active ? 'bg-gray-100' : 'text-gray-800',
-                                                router.pathname === subMenu?.href && 'bg-gray-100',
-                                                'group flex rounded-md items-center w-full px-2 py-2 text-sm'
-                                            )}
-                                        >
-                                            {subMenu?.icon && (
-                                                <subMenu.icon className="flex-shrink-0 h-6 w-6 text-green-700" aria-hidden="true" />
-                                            )}
-                                            <div className="ml-4" aria-hidden="true">
-                                                <p className="text-base font-medium text-gray-900">{subMenu.name}</p>
-                                                {subMenu?.description && (
-                                                    <p className="mt-1 text-sm text-gray-500">{subMenu?.description}</p>
-                                                )}
-                                            </div>
-                                        </Link>
+                            <>
+                            <div>
+                            <Menu.Button className={classNames(
+                                !item?.current && 'hover:border-b-2 hover:border-green-700 hover:text-green-800',
+                                    "inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-gray-700  transition duration-500 ease-in-out hover:bg-gray-200 transform hover:-translate-y-1 hover:scale-105")}>
+                                {item.name}
+                                <ChevronDownIcon
+                                    className={classNames(
+                                        open ? 'text-green-700' : 'text-gray-400',
+                                        'w-5 h-5 ml-2 -mr-1'
                                     )}
-                                </Menu.Item>
-                            </div>  
-                        ))}
+                                    aria-hidden="true"
+                                />
+                                
+                            </Menu.Button>
+                            </div>
+                            <Transition
+                                as={Fragment}
+                                enter="transition ease-out duration-100"
+                                enterFrom="transform opacity-0 scale-95"
+                                enterTo="transform opacity-100 scale-100"
+                                leave="transition ease-in duration-75"
+                                leaveFrom="transform opacity-100 scale-100"
+                                leaveTo="transform opacity-0 scale-95"
+                            >
+                            <Menu.Items className={classNames(
+                                "z-30 absolute w-72 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none")}>
+                                {item.subMenuItems?.map((subMenu: SubMenuType, key: number) =>
+                                (!subMenu.subMenuItems ?
+                                    (<div className='px-2 py-2' key={key}>
+                                        <Menu.Item key={key}>
+                                            {({ active }) => (
+                                                <Link
+                                                    href={subMenu?.href}
+                                                    className={classNames(
+                                                        active ? 'bg-gray-100' : 'text-gray-800',
+                                                        router.pathname === subMenu?.href && 'bg-gray-100',
+                                                        'group flex rounded-md items-center w-full px-2 py-2 text-sm'
+                                                    )}
+                                                >
+                                                    {subMenu?.icon && (
+                                                        <subMenu.icon className="flex-shrink-0 h-6 w-6 text-green-700" aria-hidden="true" />
+                                                    )}
+                                                    <div className="ml-4" aria-hidden="true">
+                                                        <p className="text-base font-medium text-gray-900">{subMenu.name}</p>
+                                                        {subMenu?.description && (
+                                                            <p className="mt-1 text-sm text-gray-500">{subMenu?.description}</p>
+                                                        )}
+                                                    </div>
+                                                </Link>
+                                            )}
+                                        </Menu.Item>
+                                    </div>  
+                                ) :
+                                (<div key={key}>
+                                    <Menu>
+                                        <div className='px-2 py-2 w-full'>
+                                            <Menu.Button className={classNames(
+                                                !subMenu.icon ? 'text-sm px-14' : '',
+                                                "inline-flex w-full rounded-md px-4 py-2 text-sm font-medium text-gray-700  transition duration-500 ease-in-out hover:bg-gray-100")}
+                                            >
+                                                {subMenu?.icon && (
+                                                    <subMenu.icon className="flex-shrink-0 h-6 w-6 text-green-700" aria-hidden="true" />
+                                                )}
+                                                <div className="ml-2" aria-hidden="true">
+                                                    <p className="text-base font-medium text-gray-900">{subMenu.name}</p>
+                                                    {/* {subMenu?.description && (
+                                                        <p className="mt-1 text-sm text-gray-500">{subMenu?.description}</p>
+                                                    )} */}
+                                                </div>
+                                                <div className='flex absolute right-0 mr-6'>
+                                                    <ChevronRightIcon
+                                                        className={classNames(
+                                                            open ? 'text-green-700' : 'text-gray-400',
+                                                            'w-5 h-5 ml-2 -mr-1'
+                                                        )}
+                                                        aria-hidden="true"
+                                                    />
+                                                </div>
+                                            </Menu.Button>
+                                    </div>
+                                    <Transition
+                                        enter="transition duration-100 ease-out"
+                                        enterFrom="transform scale-95 opacity-0"
+                                        enterTo="transform scale-100 opacity-100"
+                                        leave="transition duration-75 ease-out"
+                                        leaveFrom="transform scale-100 opacity-100"
+                                        leaveTo="transform scale-95 opacity-0"
+                                    ></Transition>
+                                        <Menu.Items className={classNames(
+                                            "z-30 absolute -mr-8 -mt-12 w-72 -right-60 origin-left bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none")}>
+                                            {subMenu.subMenuItems?.map((subsubMenu: SubMenuType, subKey: number) => (
+                                                // eslint-disable-next-line react/jsx-key
+                                                <div className='px-2 py-2' key={subKey}>
+                                            <Menu.Item key={subKey}>
+                                                {({ active }) => (
+                                                    <Link
+                                                        href={subMenu?.href}
+                                                        className={classNames(
+                                                            active ? 'bg-gray-100' : 'text-gray-800',
+                                                            router.pathname === subMenu?.href && 'bg-gray-100',
+                                                            'group flex rounded-md items-center w-full px-2 py-2 text-sm'
+                                                        )}
+                                                    >
+                                                        {subsubMenu?.icon && (
+                                                            <subsubMenu.icon className="flex-shrink-0 h-6 w-6 text-green-700" aria-hidden="true" />
+                                                        )}
+                                                        <div className="ml-4" aria-hidden="true">
+                                                            <p className="text-base font-medium text-gray-900">{subsubMenu.name}</p>
+                                                            {subsubMenu?.description && (
+                                                                <p className="mt-1 text-sm text-gray-500">{subsubMenu?.description}</p>
+                                                            )}
+                                                        </div>
+                                                    </Link>
+                                                )}
+                                            </Menu.Item>
+                                        </div>  
+                                            ))}
+                                        </Menu.Items>
+                                    </Menu>
+                                </div>  
+                            ))
+                        )}
                     </Menu.Items>
                 </Transition>
-                </>
+            </>
+        )}
+
+        </Menu>
+        ))))
+        }
+        </div>
+        </div>
+            <div className='hidden lg:flex lg:flex-row'>
+                {!session && (
+                <div className="px-2 lg:space-x-2">
+                    <Link href="/login" className="bg-green-700 shadow text-sm px-6 py-3 
+                    text-white rounded-lg hover:text-white transition duration-500 ease-in-out hover:bg-green-600
+                    transform hover:-translate-y-1 hover:scale-105">
+                        Fazer login
+                    </Link>  
+                    <Link href="/signup" className="bg-gray-100 shadow text-sm px-6 py-3
+                    text-green-700 rounded-lg hover:text-green-600 transition duration-500 ease-in-out hover:bg-gray-200
+                    transform hover:-translate-y-1 hover:scale-105">
+                        Cadastre-se
+                    </Link>           
+                </div>            
             )}
-    
-            </Menu>
-            ))))
-            }
-            </div>
-            </div>
-                <div className='hidden md:block'>
-                    {!session && (
-                    <div className="px-2">
-                        <Link href="/login" className="block bg-green-700 shadow hover:border-b-2 hover:border-green-700 text-sm px-6 py-2 
-                        text-white rounded-md hover:text-white transition duration-500 ease-in-out hover:bg-green-600
-                        transform hover:-translate-y-1 hover:scale-105">
-                            Login
-                        </Link>            
-                    </div>            
-                )}
-                </div>
+        </div>
                 
-                </div>
-                {session && (<div className="hidden md:block">
+        </div>
+            {session && (<div className="hidden md:block">
                 <div className="ml-4 flex items-center md:ml-6">
                     <button
                     type="button"

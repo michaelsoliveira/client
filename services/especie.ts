@@ -16,7 +16,7 @@ export type EspecieType = {
 
 export type ResponseData = {
     data: {};
-    errorMessage: string;
+    message: string;
     error: boolean
 }
 
@@ -25,7 +25,7 @@ export async function create(dataRequest: EspecieType): Promise<ResponseData> {
     const { data } = await apiClient().post(`/especie`, dataRequest, headers)
         return {
             data: data.especie,
-            errorMessage: data.errorMessage,
+            message: data.message,
             error: data.error
         }
 }
@@ -35,19 +35,19 @@ export async function update(id: string, dataRequest: EspecieType): Promise<Resp
     const { data } = await apiClient().put(`/especie/${id}`, dataRequest, headers)
         return {
             data: data.especie,
-            errorMessage: data.errorMessage,
+            message: data.message,
             error: data.error
         }
 }
 
 export async function getAll() {
-    const { provider, headers } = await authHeader()
-    const request = await apiClient().get(`/especie`, headers)
+    // const { provider, headers } = await authHeader()
+    const request = await apiClient().get(`/especie`)
             .then((response: any) => {
                 
                 const data = {
                     data: response.data.especies,
-                    errorMessage: response.data.errorMessage,
+                    message: response.data.message,
                     error: response.data.error
                 }  
                 return data
@@ -65,7 +65,7 @@ export async function getById(id: string): Promise<ResponseData> {
     
         return {
             data: response.data,
-            errorMessage: "",
+            message: "",
             error: false
         }
 }

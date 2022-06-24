@@ -3,7 +3,7 @@ import { Link } from "../../components/Link"
 import EmpresaService, { EmpresaType } from "../../services/empresa"
 import { TrashIcon as TrashIconOut, PencilAltIcon as PencilAltIconOut
 } from '@heroicons/react/outline'
-import { TrashIcon, PencilAltIcon } from '@heroicons/react/solid'
+import { TrashIcon, PencilAltIcon, UsersIcon } from '@heroicons/react/solid'
 import { GetServerSideProps } from "next"
 import AlertService from '../../services/alert'
 import Modal from "../../components/Modal"
@@ -40,7 +40,7 @@ const EmpresaIndex = () => {
         setOpenModal(true)
     }
 
-    async function deleteEmpresa(id: string) {
+    async function deleteEmpresa(id?: string) {
         try {
             await EmpresaService._delete(id)
                 .then(() => {
@@ -139,6 +139,9 @@ const EmpresaIndex = () => {
                                         <Link href={`/empresa/update/${empresa.id}`}>
                                             <PencilAltIcon className="w-5 h-5 ml-4 -mr-1 text-green-600 hover:text-green-700" />
                                         </Link>
+                                        <Link href={`/empresa/${empresa.id}/users`}>
+                                            <UsersIcon className="w-5 h-5 ml-4 -mr-1 text-indigo-600 hover:text-indigo-700" />
+                                        </Link>
                                         <Link href="#" onClick={() => toogleDeleteModal(empresa.id)}>
                                             <TrashIcon className="w-5 h-5 ml-4 -mr-1 text-red-600 hover:text-red-700" />
                                         </Link>
@@ -162,9 +165,8 @@ const EmpresaIndex = () => {
                         buttonText="Deletar"
                         bodyText={`Tem certeza que seja excluir a empresa ${selectedEmpresa?.razaoSocial}?`}
                         data={selectedEmpresa}
-                        parentReturnData={toogleDeleteModal}
                         parentFunction={deleteEmpresa}
-                        hideModal={hideModal}
+                        hideModal={() => setOpenModal(false)}
                         open={openModal}
                     />}
             </div>        

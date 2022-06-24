@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from "../../store/hooks"
 import { paginate, setCurrentPagePagination } from "../../store/paginationSlice"
 import Categorias, { CategoriaEspecieType } from "../../components/Categorias"
 import { useRouter } from "next/router"
+import { RootState } from "../../store"
 
 const CategoriaIndex = () => {
     const { client } = useContext(AuthContext)
@@ -15,7 +16,7 @@ const CategoriaIndex = () => {
     const [totalItems, setTotalItems] = useState(0)
     const [currentCategorias, setCurrentCategorias] = useState<CategoriaEspecieType[]>([])
     const [totalPages, setTotalPages] = useState(0)
-    const pagination = useAppSelector((state) => state.pagination)
+    const pagination = useAppSelector((state: RootState) => state.pagination)
     const dispatch = useAppDispatch()
     const router = useRouter()
     

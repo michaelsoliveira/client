@@ -2,14 +2,12 @@ import { Fragment, useRef, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { ExclamationIcon } from '@heroicons/react/outline'
 import classNames from './Utils/classNames'
-
 interface ModaType {
     title: string,
     buttonText: string,
     bodyText: string,
     styleButton: string,
-    parentReturnData: (id: string) => void,
-    parentFunction: (id: string) => Promise<void>,
+    parentFunction: (id?: string) => Promise<void>,
     hideModal: () => void,
     open: boolean,
     data?: any,
@@ -23,7 +21,6 @@ export default function Modal(props: ModaType) {
         buttonText,
         bodyText,
         styleButton,
-        parentReturnData,
         parentFunction,
         hideModal,
         open,
@@ -34,13 +31,13 @@ export default function Modal(props: ModaType) {
 //   const [open, setOpen] = useState(true)
 
     const cancelButtonRef = useRef(null)
-    
-    function openModal() {
-        parentReturnData(data?.id)
-    }
 
-    function callBackFunction(id: string) {
+    function callBackFunction(id?: string) {
+      if (id)   {
         parentFunction(id)
+      } else {
+        parentFunction()
+      }
     }
 
   return (

@@ -27,21 +27,19 @@ require("react-toastify/dist/ReactToastify.css");
 var AuthContext_1 = require("../contexts/AuthContext");
 var react_redux_1 = require("react-redux");
 var store_1 = require("../store");
+var browser_storage_1 = require("../store/browser-storage");
 var Layout_1 = require("../components/Layout");
 var react_toastify_1 = require("react-toastify");
 var react_1 = require("next-auth/react");
+var debounce_1 = require("debounce");
 function MyApp(_a) {
-    // useEffect(() => {
-    //   window.fbAsyncInit = function() {
-    //     window.FB.init({
-    //       appId            : process.env.FACEBOOK_CLIENT_ID,
-    //       autoLogAppEvents : true,
-    //       xfbml            : true,
-    //       version          : 'v12.0'
-    //     });
-    //   };
-    // })
     var Component = _a.Component, _b = _a.pageProps, session = _b.session, pageProps = __rest(_b, ["session"]);
+    store_1.store.subscribe(
+    // we use debounce to save the state once each 800ms
+    // for better performances in case multiple changes occur in a short time
+    debounce_1.debounce(function () {
+        browser_storage_1.saveState(store_1.store.getState());
+    }, 800));
     return (React.createElement(react_1.SessionProvider, { session: session },
         React.createElement(react_redux_1.Provider, { store: store_1.store },
             React.createElement(AuthContext_1.AuthProvider, null,

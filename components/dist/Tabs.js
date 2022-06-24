@@ -27,9 +27,9 @@ var Tabs = function () {
                             : 'text-gray-700 hover:bg-gray-100 hover:text-green-700');
                     } }, "Cadastro")),
             React.createElement(react_1.Tab.Panels, { className: "mt-2" },
-                React.createElement(react_1.Tab.Panel, { className: classnames_1["default"]('bg-white shadow-lg rounded-xl px-4 py-2') },
+                React.createElement(react_1.Tab.Panel, { className: classnames_1["default"]('bg-white shadow-lg rounded-xl px-6 py-4') },
                     React.createElement(Login_1["default"], null)),
-                React.createElement(react_1.Tab.Panel, { className: classnames_1["default"]('bg-white shadow-lg rounded-xl px-4 py-2') },
-                    React.createElement(RegisterForm_1.RegisterForm, { styles: styles }))))));
+                React.createElement(react_1.Tab.Panel, { className: classnames_1["default"]('bg-white shadow-lg rounded-xl px-4 py-2 text-left') },
+                    React.createElement(RegisterForm_1.RegisterForm, { styles: styles, redirect: true }))))));
 };
 exports["default"] = Tabs;

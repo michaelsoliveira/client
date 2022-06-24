@@ -20,16 +20,21 @@ async function findProvider(provider: string, user: any) {
       const dataProvider = {
         username: user?.name,
         email: user?.email,
-        password: '123456',
+        password: Math.random().toString(36).slice(-8),
         image: user?.image,
         provider,
         idProvider: user?.id
       }
-    
+      
       const userExists = await userService.findByProvider(provider, user)
         
       if (!userExists) {  
         await userService.create(dataProvider)
+          .then( () => {
+              userService.sendEmail(dataProvider)
+          })
+      } else {
+        console.log(dataProvider)
       }
     } catch (error) {
         console.log(error)
@@ -142,38 +147,38 @@ export default NextAuth({
       clientSecret: process.env.GITHUB_CLIENT_SECRET
     }),
       CredentialsProvider({
-      name: 'Credentials',
-      credentials: {
-      email: { label: "Email", type: "text", placeholder: "smithmichael@gmail.com" },
-      password: {  label: "Password", type: "password" }
-    },
-      async authorize(credentials, req) {
-      try {
-        const res = await fetch("http://localhost:3333/auth/login", {
-            method: 'POST',
-            body: JSON.stringify(credentials),
-            headers: { "Content-Type": "application/json" }
-        })
-        
-        const user = res.json().then((data: any) => {
-          const response = {
-            local: true,
-            ...data.user
-          }
-          return response
-        
-          
-        })
-        // If no error and we have user data, return it
-        if (res.ok && user) {
-          return user
-        } 
+        name: 'Credentials',
+        credentials: {
+          email: { label: "Email", type: "text", placeholder: "smithmichael@gmail.com" },
+          password: {  label: "Password", type: "password" }
+        },
+          async authorize(credentials, req) {
+          try {
+            const res = await fetch("http://localhost:3333/auth/login", {
+                method: 'POST',
+                body: JSON.stringify(credentials),
+                headers: { "Content-Type": "application/json" }
+            })
             
-        return null
-      } catch (error: any) {
-        const errorMessage = error.response.data.message
-        throw new Error(`${errorMessage} &email=${credentials?.email}`)
-      }
+            const user = res.json().then((data: any) => {
+              const response = {
+                local: true,
+                ...data.user
+              }
+              return response
+            
+              
+            })
+            // If no error and we have user data, return it
+            if (res.ok && user) {
+              return user
+            } 
+                
+            return null
+          } catch (error: any) {
+            const errorMessage = error.response.data.message
+            throw new Error(`${errorMessage} &email=${credentials?.email}`)
+          }
         
         }
     })
@@ -253,24 +258,6 @@ export default NextAuth({
           user
         }
       }
-
-      // if (token?.refreshToken) {
-      //   const tokenExpires = token.accessTokenExpires
-      //   const almostNow = Date.now() + 30 * 1000
-        
-      //   if (typeof tokenExpires !== typeof "undefined" && tokenExpires < almostNow) {
-      //     // const currentRefreshToken = token?.refreshToken ? 
-      //     try {
-      //       const data = await handleRefreshToken(token.newRefreshToken ? token.newRefreshToken : token.refreshToken)
-      //       if (data.refresh_token) {
-      //         token.newRefreshToken = data.refresh_token
-      //       }
-              
-      //     } catch (error) {
-      //       console.log(error)
-      //     }
-      //   }
-      // }
       
       // Return previous token if the access token has not expired yet
       if (Date.now() < token.accessTokenExpires) {
@@ -279,12 +266,6 @@ export default NextAuth({
 
       // Access token has expired, try to update it
       return refreshAccessToken(token)
-
-      // if (account) {
-      //   token.accessToken = account.access_token
-      //   token.refreshToken = account.refresh_token
-      // }
-      // return token
     },
     async session({ session, token }: any) {
       // Send properties to the client, like an access_token from a provider.

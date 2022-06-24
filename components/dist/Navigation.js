@@ -28,6 +28,18 @@ function Navigation(_a) {
     // const { data: session, status } = useSession()
     var router = router_1.useRouter();
     var _b = react_1.useState([]), navigation = _b[0], setNavigation = _b[1];
+    var _c = react_1.useState(false), sticky = _c[0], setSticky = _c[1];
+    var handleScroll = function () {
+        if (scrollY > 72) {
+            setSticky(true);
+        }
+        else if (scrollY < 72) {
+            setSticky(false);
+        }
+    };
+    react_1.useEffect(function () {
+        addEventListener('scroll', handleScroll);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
     var changeCurrentParent = function (key, href) {
         var changeCurrentNav = defaultNavigation.map(function (nav, index) {
@@ -63,20 +75,22 @@ function Navigation(_a) {
             checkCurrentNavigation();
         }
     }, [session]);
-    return (React.createElement(react_2.Disclosure, { as: "nav", className: "bg-white shadow" }, function (_a) {
+    return (React.createElement(react_2.Disclosure, { as: "nav", className: classnames_1["default"]("lg:absolute items-center w-full opacity-100 z-50") }, function (_a) {
         var _b, _c, _d, _e, _f, _g;
         var open = _a.open;
         return (React.createElement(React.Fragment, null,
-            React.createElement("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" },
+            React.createElement("div", { className: classnames_1["default"]("px-4 sm:px-6 lg:px-8 bg-gray-50 shadow z-50", sticky ? 'lg:fixed w-full opacity-100 transition transition-ease duration-500 translate-y-0' : '') },
                 React.createElement("div", { className: "flex items-center justify-between h-16" },
-                    React.createElement("div", { className: "flex items-center justify-between max-w-full w-full" },
+                    React.createElement("div", { className: classnames_1["default"]("flex items-center justify-between max-w-full w-full") },
                         React.createElement("div", { className: "flex-shrink-0 lg:-mr-16" },
-                            React.createElement(Logo_1["default"], { width: 'w-10', height: 'h-10' })),
+                            React.createElement(Link_1.Link, { href: "/" },
+                                React.createElement(Logo_1["default"], { width: 'w-10', height: 'h-10' }))),
                         React.createElement("div", { className: "hidden md:block" },
                             React.createElement("div", { className: "ml-10 flex items-baseline space-x-4" }, navigation === null || navigation === void 0 ? void 0 : navigation.map(function (item, key) { return (item.visible && (!item.subMenu ?
                                 (React.createElement("a", { key: key, href: item.href, onClick: function (evt) {
                                         evt.preventDefault();
                                         changeCurrentParent(key, item.href);
+                                        open = !open;
                                     }, className: classnames_1["default"](item.current
                                         ? 'border-b-2 border-green-700 text-gray-700 bg-gray-100'
                                         : 'text-gray-700 hover:border-b-2 hover:border-green-700 hover:text-green-800 transition duration-500 ease-in-out hover:bg-gray-200 transform hover:-translate-y-1 hover:scale-105', 'px-6 py-2 text-sm font-medium hover:bg-gray-100 in-line flex'), "aria-current": item.current ? 'page' : undefined }, item.name)) :
@@ -92,20 +106,44 @@ function Navigation(_a) {
                                                 item.name,
                                                 React.createElement(solid_1.ChevronDownIcon, { className: classnames_1["default"](open ? 'text-green-700' : 'text-gray-400', 'w-5 h-5 ml-2 -mr-1'), "aria-hidden": "true" }))),
                                         React.createElement(react_2.Transition, { as: react_1.Fragment, enter: "transition ease-out duration-100", enterFrom: "transform opacity-0 scale-95", enterTo: "transform opacity-100 scale-100", leave: "transition ease-in duration-75", leaveFrom: "transform opacity-100 scale-100", leaveTo: "transform opacity-0 scale-95" },
-                                            React.createElement(react_2.Menu.Items, { className: classnames_1["default"]("z-30 absolute w-96 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none") }, (_b = item.subMenuItems) === null || _b === void 0 ? void 0 : _b.map(function (subMenu, key) {
-                                                return (React.createElement("div", { className: 'px-2 py-2', key: key },
-                                                    React.createElement(react_2.Menu.Item, { key: key }, function (_a) {
-                                                        var active = _a.active;
-                                                        return (React.createElement(Link_1.Link, { href: subMenu === null || subMenu === void 0 ? void 0 : subMenu.href, className: classnames_1["default"](active ? 'bg-gray-100' : 'text-gray-800', router.pathname === (subMenu === null || subMenu === void 0 ? void 0 : subMenu.href) && 'bg-gray-100', 'group flex rounded-md items-center w-full px-2 py-2 text-sm') },
-                                                            (subMenu === null || subMenu === void 0 ? void 0 : subMenu.icon) && (React.createElement(subMenu.icon, { className: "flex-shrink-0 h-6 w-6 text-green-700", "aria-hidden": "true" })),
-                                                            React.createElement("div", { className: "ml-4", "aria-hidden": "true" },
-                                                                React.createElement("p", { className: "text-base font-medium text-gray-900" }, subMenu.name),
-                                                                (subMenu === null || subMenu === void 0 ? void 0 : subMenu.description) && (React.createElement("p", { className: "mt-1 text-sm text-gray-500" }, subMenu === null || subMenu === void 0 ? void 0 : subMenu.description)))));
-                                                    })));
+                                            React.createElement(react_2.Menu.Items, { className: classnames_1["default"]("z-30 absolute w-72 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none") }, (_b = item.subMenuItems) === null || _b === void 0 ? void 0 : _b.map(function (subMenu, key) {
+                                                var _a;
+                                                return (!subMenu.subMenuItems ?
+                                                    (React.createElement("div", { className: 'px-2 py-2', key: key },
+                                                        React.createElement(react_2.Menu.Item, { key: key }, function (_a) {
+                                                            var active = _a.active;
+                                                            return (React.createElement(Link_1.Link, { href: subMenu === null || subMenu === void 0 ? void 0 : subMenu.href, className: classnames_1["default"](active ? 'bg-gray-100' : 'text-gray-800', router.pathname === (subMenu === null || subMenu === void 0 ? void 0 : subMenu.href) && 'bg-gray-100', 'group flex rounded-md items-center w-full px-2 py-2 text-sm') },
+                                                                (subMenu === null || subMenu === void 0 ? void 0 : subMenu.icon) && (React.createElement(subMenu.icon, { className: "flex-shrink-0 h-6 w-6 text-green-700", "aria-hidden": "true" })),
+                                                                React.createElement("div", { className: "ml-4", "aria-hidden": "true" },
+                                                                    React.createElement("p", { className: "text-base font-medium text-gray-900" }, subMenu.name),
+                                                                    (subMenu === null || subMenu === void 0 ? void 0 : subMenu.description) && (React.createElement("p", { className: "mt-1 text-sm text-gray-500" }, subMenu === null || subMenu === void 0 ? void 0 : subMenu.description)))));
+                                                        }))) :
+                                                    (React.createElement("div", { key: key },
+                                                        React.createElement(react_2.Menu, null,
+                                                            React.createElement("div", { className: 'px-2 py-2 w-full' },
+                                                                React.createElement(react_2.Menu.Button, { className: classnames_1["default"](!subMenu.icon ? 'text-sm px-14' : '', "inline-flex w-full rounded-md px-4 py-2 text-sm font-medium text-gray-700  transition duration-500 ease-in-out hover:bg-gray-100") },
+                                                                    (subMenu === null || subMenu === void 0 ? void 0 : subMenu.icon) && (React.createElement(subMenu.icon, { className: "flex-shrink-0 h-6 w-6 text-green-700", "aria-hidden": "true" })),
+                                                                    React.createElement("div", { className: "ml-2", "aria-hidden": "true" },
+                                                                        React.createElement("p", { className: "text-base font-medium text-gray-900" }, subMenu.name)),
+                                                                    React.createElement("div", { className: 'flex absolute right-0 mr-6' },
+                                                                        React.createElement(solid_1.ChevronRightIcon, { className: classnames_1["default"](open ? 'text-green-700' : 'text-gray-400', 'w-5 h-5 ml-2 -mr-1'), "aria-hidden": "true" })))),
+                                                            React.createElement(react_2.Transition, { enter: "transition duration-100 ease-out", enterFrom: "transform scale-95 opacity-0", enterTo: "transform scale-100 opacity-100", leave: "transition duration-75 ease-out", leaveFrom: "transform scale-100 opacity-100", leaveTo: "transform scale-95 opacity-0" }),
+                                                            React.createElement(react_2.Menu.Items, { className: classnames_1["default"]("z-30 absolute -mr-8 -mt-12 w-72 -right-60 origin-left bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none") }, (_a = subMenu.subMenuItems) === null || _a === void 0 ? void 0 : _a.map(function (subsubMenu, subKey) { return (
+                                                            // eslint-disable-next-line react/jsx-key
+                                                            React.createElement("div", { className: 'px-2 py-2', key: subKey },
+                                                                React.createElement(react_2.Menu.Item, { key: subKey }, function (_a) {
+                                                                    var active = _a.active;
+                                                                    return (React.createElement(Link_1.Link, { href: subMenu === null || subMenu === void 0 ? void 0 : subMenu.href, className: classnames_1["default"](active ? 'bg-gray-100' : 'text-gray-800', router.pathname === (subMenu === null || subMenu === void 0 ? void 0 : subMenu.href) && 'bg-gray-100', 'group flex rounded-md items-center w-full px-2 py-2 text-sm') },
+                                                                        (subsubMenu === null || subsubMenu === void 0 ? void 0 : subsubMenu.icon) && (React.createElement(subsubMenu.icon, { className: "flex-shrink-0 h-6 w-6 text-green-700", "aria-hidden": "true" })),
+                                                                        React.createElement("div", { className: "ml-4", "aria-hidden": "true" },
+                                                                            React.createElement("p", { className: "text-base font-medium text-gray-900" }, subsubMenu.name),
+                                                                            (subsubMenu === null || subsubMenu === void 0 ? void 0 : subsubMenu.description) && (React.createElement("p", { className: "mt-1 text-sm text-gray-500" }, subsubMenu === null || subsubMenu === void 0 ? void 0 : subsubMenu.description)))));
+                                                                }))); }))))));
                                             })))));
                                 })))); }))),
-                        React.createElement("div", { className: 'hidden md:block' }, !session && (React.createElement("div", { className: "px-2" },
-                            React.createElement(Link_1.Link, { href: "/login", className: "block bg-green-700 shadow hover:border-b-2 hover:border-green-700 text-sm px-6 py-2 \n                        text-white rounded-md hover:text-white transition duration-500 ease-in-out hover:bg-green-600\n                        transform hover:-translate-y-1 hover:scale-105" }, "Login"))))),
+                        React.createElement("div", { className: 'hidden lg:flex lg:flex-row' }, !session && (React.createElement("div", { className: "px-2 lg:space-x-2" },
+                            React.createElement(Link_1.Link, { href: "/login", className: "bg-green-700 shadow text-sm px-6 py-3 \n                    text-white rounded-lg hover:text-white transition duration-500 ease-in-out hover:bg-green-600\n                    transform hover:-translate-y-1 hover:scale-105" }, "Fazer login"),
+                            React.createElement(Link_1.Link, { href: "/signup", className: "bg-gray-100 shadow text-sm px-6 py-3\n                    text-green-700 rounded-lg hover:text-green-600 transition duration-500 ease-in-out hover:bg-gray-200\n                    transform hover:-translate-y-1 hover:scale-105" }, "Cadastre-se"))))),
                     session && (React.createElement("div", { className: "hidden md:block" },
                         React.createElement("div", { className: "ml-4 flex items-center md:ml-6" },
                             React.createElement("button", { type: "button", className: "bg-gray-200 p-1 rounded-full text-gray-700 hover:text-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-800 focus:ring-white" },

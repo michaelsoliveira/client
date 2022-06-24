@@ -73,7 +73,7 @@ var Categorias = function (_a) {
                 try {
                     client["delete"]("/categoria/" + id)
                         .then(function () {
-                        alert_1["default"].success('A espécie foi deletada com SUCESSO!!!');
+                        alert_1["default"].success('A categoria de espécie foi deletada com SUCESSO!!!');
                         loadCategorias();
                         setOpenModal(false);
                     });
@@ -197,11 +197,11 @@ var Categorias = function (_a) {
                                     React.createElement("div", { className: "text-sm text-gray-500" }, (categoria === null || categoria === void 0 ? void 0 : categoria.preservar) ? (React.createElement("div", null, "Sim"))
                                         : (React.createElement("div", null, "N\u00E3o"))))),
                             React.createElement("td", { className: "px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex flex-row items-center" },
-                                React.createElement(Link_1.Link, { href: "/categoria/update/" + categoria.id },
+                                React.createElement(Link_1.Link, { href: "/categoria-especie/update/" + categoria.id },
                                     React.createElement(solid_1.PencilAltIcon, { className: "w-5 h-5 ml-4 -mr-1 text-green-600 hover:text-green-700" })),
                                 React.createElement(Link_1.Link, { href: "#", onClick: function () { return toogleDeleteModal(categoria.id); } },
                                     React.createElement(solid_1.TrashIcon, { className: "w-5 h-5 ml-4 -mr-1 text-red-600 hover:text-red-700" }))))); }))))),
             openModal &&
-                React.createElement(Modal_1["default"], { className: "w-full", styleButton: "bg-red-600 hover:bg-red-700 focus:ring-red-500", title: "Deletar esp\u00E9cie", buttonText: "Deletar", bodyText: "Tem certeza que seja excluir a Categoria " + (selectedCategoria === null || selectedCategoria === void 0 ? void 0 : selectedCategoria.nome) + "?", data: selectedCategoria, parentReturnData: toogleDeleteModal, parentFunction: deleteCategoria, hideModal: function () { return setOpenModal(false); }, open: openModal })))));
+                React.createElement(Modal_1["default"], { className: "w-full", styleButton: "bg-red-600 hover:bg-red-700 focus:ring-red-500", title: "Deletar esp\u00E9cie", buttonText: "Deletar", bodyText: "Tem certeza que seja excluir a Categoria " + (selectedCategoria === null || selectedCategoria === void 0 ? void 0 : selectedCategoria.nome) + "?", data: selectedCategoria, parentFunction: deleteCategoria, hideModal: function () { return setOpenModal(false); }, open: openModal })))));
 };
 exports["default"] = Categorias;

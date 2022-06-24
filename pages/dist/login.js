@@ -39,23 +39,46 @@ exports.__esModule = true;
 exports.getServerSideProps = void 0;
 var router_1 = require("next/router");
 var Login_1 = require("../components/Login");
+var Logo_1 = require("../components/Logo");
 var react_1 = require("next-auth/react");
+var link_1 = require("next/link");
 var Pagelogin = function (_a) {
     var csrfToken = _a.csrfToken;
     var router = router_1.useRouter();
-    return (React.createElement("div", { className: "min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" },
-        React.createElement("div", { className: "max-w-md w-full space-y-8 p-12 border rounded-md shadow-2xl" },
-            React.createElement(Login_1["default"], { csrfToken: csrfToken }))));
+    return (React.createElement("div", { className: "min-h-full flex items-center justify-center mt-28 mb-16 px-4 sm:px-6 lg:px-8" },
+        React.createElement("div", { className: "max-w-md flex flex-col justify-center items-center w-full space-y-4 px-8 py-4 border rounded-md shadow-2xl" },
+            React.createElement("div", { className: 'absolute top-24' },
+                React.createElement("div", { className: 'bg-gray-50 border border-green-700 rounded-full shadow-lg w-36 h-36' },
+                    React.createElement("div", { className: 'relative h-full flex flex-col items-center justify-center' },
+                        React.createElement(Logo_1["default"], { width: 'w-16', height: 'h-16' }),
+                        React.createElement("h1", { className: 'font-roboto text-xl font-semibold text-green-700' }, "iFlorestal")))),
+            React.createElement("div", { className: "pt-10" },
+                React.createElement(Login_1["default"], { csrfToken: csrfToken })),
+            React.createElement("p", { className: 'flex items-center py-4 text-center text-sm' },
+                "N\u00E3o tem conta?\u00A0",
+                React.createElement("span", { className: 'underline font-bold text-green-700' },
+                    " ",
+                    React.createElement(link_1["default"], { href: '/signup' }, "Cadastre-se"))))));
 };
 exports.getServerSideProps = function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, _b;
+    var session, _a, _b;
     return __generator(this, function (_c) {
         switch (_c.label) {
-            case 0:
+            case 0: return [4 /*yield*/, react_1.getSession(ctx)];
+            case 1:
+                session = _c.sent();
+                if (session) {
+                    return [2 /*return*/, {
+                            redirect: {
+                                destination: '/',
+                                permanent: false
+                            }
+                        }];
+                }
                 _a = {};
                 _b = {};
                 return [4 /*yield*/, react_1.getCsrfToken(ctx)];
-            case 1: return [2 /*return*/, (_a.props = (_b.csrfToken = _c.sent(),
+            case 2: return [2 /*return*/, (_a.props = (_b.csrfToken = _c.sent(),
                     _b),
                     _a)];
         }

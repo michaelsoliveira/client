@@ -25,6 +25,18 @@ export async function create(dataRequest: UserData) : Promise<ResponseData> {
         }
 }
 
+export async function sendEmail(dataResponse: any): Promise<void> {
+    const { email, username: name, password } = dataResponse
+    
+    const { data } = await apiClient().post('/users/send-email', {
+        email,
+        name,
+        message: `Sua senha de acesso é: <b>${password}</b>`
+    })
+
+    return data
+}
+
 export async function findByProvider(provider: string, user: any): Promise<any> {
     
     const response = await apiClient().get(`/provider/find?provider=${provider}&idProvider=${user.id}`)
@@ -34,6 +46,7 @@ export async function findByProvider(provider: string, user: any): Promise<any> 
 
 const AuthService = {
     create,
+    sendEmail,
     findByProvider
 }
 

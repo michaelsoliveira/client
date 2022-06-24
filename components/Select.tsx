@@ -12,7 +12,7 @@ export interface OptionType {
 }
 
 export type SelectType = {
-  label: string;
+  label?: string;
   options: any;
   callback: (option: any) => void;
   defaultOptions?: OptionType[];

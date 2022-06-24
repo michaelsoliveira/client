@@ -1,4 +1,5 @@
 import { ChangePassword } from "../../components/user/ChangePassword"
+import withAuthentication from "../../components/withAuthentication"
 
 const ChangePasswordPage = () => {
     return (
@@ -8,4 +9,4 @@ const ChangePasswordPage = () => {
     )
 }
 
-export default ChangePasswordPage
+export default withAuthentication(ChangePasswordPage)

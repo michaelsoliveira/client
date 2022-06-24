@@ -20,18 +20,23 @@ function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ')
 }
 
-export const RegisterForm = ({ styles, parentShowLogin }: any) => {
+type RegisterType = {
+    styles?: any;
+    userId?: string;
+    empresaId?: string;
+    redirect?: boolean
+}
+
+export const RegisterForm = ({ styles, empresaId, userId, redirect }: RegisterType) => {
     const dispatch = useAppDispatch()
     const router = useRouter()
     const user = useSelector((state: RootState) => state.user.data)
     const errorMessage = useSelector((state: RootState) => state.user.errorMessage)
+    const isAddMode = !userId
     const { message } = useSelector((state: RootState) => state.message) as any
-    // const { signIn } = useContext(AuthContext)
-    function showLogin() {
-        parentShowLogin(true)
-    }
 
     const validationSchema = Yup.object().shape({
+        isAddMode: Yup.boolean(),
         username: Yup.string()
         .test(
             "len",
@@ -45,43 +50,56 @@ export const RegisterForm = ({ styles, parentShowLogin }: any) => {
         email: Yup.string()
         .email("Este não é um email válido.")
         .required("Campo obrigatório!"),
-        password: Yup.string()
-        .test(
-            "len",
-            "The password must be between 6 and 40 characters.",
-            (val: any) =>
-            val &&
-            val.toString().length >= 6 &&
-            val.toString().length <= 40
-        )
-        .required("Campo obrigatório!"),
+        password:
+            Yup.string()
+            .when('isAddMode', {
+                is: true,
+                then: Yup.string().required('Password is required').min(6, 'A senha deve possuir no mínimo 6 caracteres')
+            }),
+            
+        confirmPassword: Yup.string()
+            .when('password', (password, schema) => {
+                if (password || isAddMode) return schema.required('A confirmação de senha é obrigatória')
+            })
+            .oneOf([Yup.ref('password')], 'As senhas informadas não coincidem')
     });
 
     async function handleRegister(data: UserData) {
-        await dispatch(create(data))
+        const preparedData = {
+            ...data,
+            empresaId
+        }
+        await dispatch(create(preparedData))
         .unwrap()
-        .then(async () => {
-            const { email, password } = data
+            .then(async (responseData) => {
+                if (redirect) {
+                    const { email, password } = data
             
-            const res = await signIn('credentials', {
-            redirect: false,
-            email,
-            password,
-            // callbackUrl: `${window.location.origin}`,
-          }).then((response: any) => {
-            console.log(response)
-                if (response.ok) {
-                AlertService.success('Login realizado com sucesso')
-                router.push('/')
+                    const res = await signIn('credentials', {
+                    redirect: false,
+                    email,
+                    password,
+                    // callbackUrl: `${window.location.origin}`,
+                    }).then((response: any) => {
+                        console.log(response)
+                        if (response.ok) {
+                            AlertService.success('Login realizado com sucesso')
+                            router.push('/')
+                        } else {
+                            AlertService.warn('Email ou senha inválidos, verifique os dados e tente novamente!')
+                        }
+                        
+                    }).catch ((e) => {
+                        console.log(e)
+                    })
                 } else {
-                AlertService.warn('Email ou senha inválidos, verifique os dados e tente novamente!')
+                    console.log(responseData)
+                    AlertService.success('Usuário cadastrado com SUCESSO!')
+                    router.push(`/empresa/${empresaId}/users`)
                 }
-            }).catch ((e) => {
-                console.log(e)
-            })
         })
-            .catch((error) => {
-            AlertService.error(`Error: ${error.errorMessage}`)
+        .catch((error: any) => {
+            AlertService.warn(`Error: ${error.message}`)
         });
     }
 
@@ -89,15 +107,16 @@ export const RegisterForm = ({ styles, parentShowLogin }: any) => {
         username: string;
         email: string;
         password: string;
+        confirmPassword: string;
         provider: string;
         idProvider: string;
+        isAddMode: boolean;
     }
 
     useEffect(() => {
-        setMessage('Lading...')
+        setMessage('Loading...')
         
         return () => {
-            
             
         }
     }, [])
@@ -109,8 +128,10 @@ export const RegisterForm = ({ styles, parentShowLogin }: any) => {
                     username: '',
                     email: '',
                     password: '',
+                    confirmPassword: '',
                     provider: '',
-                    idProvider: ''
+                    idProvider: '',
+                    isAddMode
                 }}
                 validationSchema={validationSchema}
                 onSubmit={ (
@@ -130,7 +151,8 @@ export const RegisterForm = ({ styles, parentShowLogin }: any) => {
                         handleChange,
                         handleBlur,
                         handleSubmit,
-                        handleReset
+                        handleReset,
+                        setValues
                     } = props;
                     return (
                         <Form>
@@ -147,15 +169,28 @@ export const RegisterForm = ({ styles, parentShowLogin }: any) => {
                                 type="email"
                             />
                             <ErrorMessage className='text-sm text-red-500 mt-1' name="email" component="div" />
-                            <label className={styles.label} htmlFor="password">Senha</label>
-                            <Field
-                                type="password"
-                                className={styles.field}
-                                id="password"
-                                name="password"
-                                placeholder="******" />
-                            <ErrorMessage className='text-sm text-red-500 mt-1' name="password" component="div" />
-                            <div className='mt-8 flex flex-row justify-between w-full items-center'>
+                            {isAddMode && (
+                                <><label className={styles.label} htmlFor="password">Senha</label>
+                                    <Field
+                                        type="password"
+                                        className={styles.field}
+                                        id="password"
+                                        name="password"
+                                        placeholder="******"
+                                    />
+                                    <ErrorMessage className='text-sm text-red-500 mt-1' name="password" component="div" />
+                                    <label className={styles.label} htmlFor="password">Confirmar a Senha</label>
+                                    <Field
+                                        type="password"
+                                        className={styles.field}
+                                        id="confirmPassword"
+                                        name="confirmPassword"
+                                        placeholder="******"
+                                    />
+                                    <ErrorMessage className='text-sm text-red-500 mt-1' name="confirmPassword" component="div" />
+                                </>
+                            )}
+                            <div className='mt-8 flex flex-row justify-end w-full items-center'>
                                 <button className={classNames(styles.button, 'w-full')} type="submit">Cadastrar</button>
                             </div>
                     

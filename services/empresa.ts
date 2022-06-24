@@ -96,7 +96,7 @@ class EmpresaService {
             }
     }
 
-    async _delete(id: string, ctx?: any): Promise<void>{
+    async _delete(id?: string, ctx?: any): Promise<void>{
         const headers = await authHeader()
         await apiClient().delete(`/empresa/${id}`, headers)
     }

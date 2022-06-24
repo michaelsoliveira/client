@@ -34,6 +34,10 @@ function Login({ csrfToken }: any) {
     const { register, handleSubmit, setError, formState } = useForm(formOptions);
     const { errors } = formState;
 
+  // useEffect(() => {
+    
+  // })
+
   function signInProvider(provider: string) {
     event?.preventDefault()
     return signIn(provider, {
@@ -76,37 +80,22 @@ function Login({ csrfToken }: any) {
       <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6" method='POST'>
           <input type="hidden" name="csrfToken" value={csrfToken} />
             <input type="hidden" name="remember" defaultValue="true" />
-            <div className="rounded-md shadow-sm -space-y-px">
-              <div>
-                <label htmlFor="email-address" className="sr-only">
-                  Email address
-                </label>
-                <input
-                    {...register('email')}
-                  id="email-address"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                  placeholder="Email address"
-                />
-              </div>
-              <div>
-                <label htmlFor="password" className="sr-only">
-                  Password
-                </label>
-                <input
-                    {...register('password')}
-                  id="login-password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  className="appearance-none rounded-md relative block w-full px-3 py-2 mt-4 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                  placeholder="Password"
-                />
-              </div>
+            <div className="rounded-md">
+              <div className="relative">
+                    <input
+                      autoFocus
+                      {...register('email')}
+                      id="email" name="email" type="email" className="peer h-10 w-full border-b border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-green-600" placeholder="michaelsoliveira@gmail.com" />
+                      <label htmlFor="email" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Email</label>
+                  </div>
+              
+                <div className="mt-10 relative">
+                    <input
+                      {...register('password')}
+                      id="password" name="password" type="password" className="peer h-10 w-full border-b border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-green-600" placeholder="michaelsoliveira@gmail.com" />
+                      <label htmlFor="password" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Senha</label>
+                  </div>
+              
             </div>
 
             <div className="flex items-center justify-between">
@@ -124,16 +113,16 @@ function Login({ csrfToken }: any) {
 
               <div className="text-sm">
                 <a href="#" className="font-medium text-green-600 hover:text-green-500">
-                  Forgot your password?
+                  Esqueceu sua senha?
                 </a>
               </div>
             </div>
 
-            <div>
+            <div className='mx-auto flex flex-row items-center justify-center py-4'>
             <button
                 disabled={formState.isSubmitting}
                 type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                className="group relative w-3/4 py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
               >
                 <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                   <LockClosedIcon className="h-5 w-5 text-green-500 group-hover:text-green-400" aria-hidden="true" />
@@ -164,16 +153,16 @@ function Login({ csrfToken }: any) {
             </a>
         </div>
         <button
-          onClick={() => signInProvider('github')}
-          className="flex items-center justify-center mb-2 text-gray-700 hover:text-gray-800 rounded-lg shadow-md hover:bg-gray-100 w-5/6">
-          <FaGithub className="fa fa-facebook mr-2" />
-          <h1 className="px-4 py-3 w-5/6 text-center text-gray-600 font-medium">Sign in with Github</h1>
-        </button>
-        <button
           onClick={() => signInProvider('facebook')}
           className="flex items-center justify-center mb-2 text-indigo-700 hover:text-indigo-600 rounded-lg shadow-md hover:bg-gray-100 w-5/6">
           <FaFacebookF className="fa fa-facebook mr-2" />
           <h1 className="px-4 py-3 w-5/6 text-center text-gray-600 font-medium">Sign in with Facebook</h1>
+        </button>
+        <button
+          onClick={() => signInProvider('github')}
+          className="flex items-center justify-center mb-2 text-gray-700 hover:text-gray-800 rounded-lg shadow-md hover:bg-gray-100 w-5/6">
+          <FaGithub className="fa fa-facebook mr-2" />
+          <h1 className="px-4 py-3 w-5/6 text-center text-gray-600 font-medium">Sign in with Github</h1>
         </button>
       </div> 
     </div>

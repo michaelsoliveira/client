@@ -45,7 +45,7 @@ export async function signInRequest(dataRequest: SignInRequestData) : Promise<Da
 export async function handleRefreshToken(token: string): Promise<any> {
     
     const response = await apiClient().post('/auth/refresh', { token })
-    console.log(response.data)
+    
     return response.data
 }
 

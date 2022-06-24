@@ -9,7 +9,7 @@ export function apiClient(ctx?: any) {
     // const { 'next-auth.session-token': token } = parseCookies(ctx)
 
     const api = axios.create({
-        baseURL: 'http://localhost:3333',
+        baseURL: 'http://192.168.1.105:3333',
         // withCredentials: true
     })
 
@@ -17,7 +17,6 @@ export function apiClient(ctx?: any) {
         return response
     }, error => {
         const { status } = error.response
-        
         if (status === 401) {
             console.log(error.response)
             return location.href = '/'

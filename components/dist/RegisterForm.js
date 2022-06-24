@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -57,17 +68,15 @@ function classNames() {
     return classes.filter(Boolean).join(' ');
 }
 exports.RegisterForm = function (_a) {
-    var styles = _a.styles, parentShowLogin = _a.parentShowLogin;
+    var styles = _a.styles, empresaId = _a.empresaId, userId = _a.userId, redirect = _a.redirect;
     var dispatch = hooks_1.useAppDispatch();
     var router = router_1.useRouter();
     var user = react_redux_1.useSelector(function (state) { return state.user.data; });
     var errorMessage = react_redux_1.useSelector(function (state) { return state.user.errorMessage; });
+    var isAddMode = !userId;
     var message = react_redux_1.useSelector(function (state) { return state.message; }).message;
-    // const { signIn } = useContext(AuthContext)
-    function showLogin() {
-        parentShowLogin(true);
-    }
     var validationSchema = Yup.object().shape({
+        isAddMode: Yup.boolean(),
         username: Yup.string()
             .test("len", "O nome de usuário tem que ter entre 3 e 20 caracteres.", function (val) {
             return val &&
@@ -79,50 +88,64 @@ exports.RegisterForm = function (_a) {
             .email("Este não é um email válido.")
             .required("Campo obrigatório!"),
         password: Yup.string()
-            .test("len", "The password must be between 6 and 40 characters.", function (val) {
-            return val &&
-                val.toString().length >= 6 &&
-                val.toString().length <= 40;
+            .when('isAddMode', {
+            is: true,
+            then: Yup.string().required('Password is required').min(6, 'A senha deve possuir no mínimo 6 caracteres')
+        }),
+        confirmPassword: Yup.string()
+            .when('password', function (password, schema) {
+            if (password || isAddMode)
+                return schema.required('A confirmação de senha é obrigatória');
         })
-            .required("Campo obrigatório!")
+            .oneOf([Yup.ref('password')], 'As senhas informadas não coincidem')
     });
     function handleRegister(data) {
         return __awaiter(this, void 0, void 0, function () {
+            var preparedData;
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, dispatch(userSlice_1.create(data))
-                            .unwrap()
-                            .then(function () { return __awaiter(_this, void 0, void 0, function () {
-                            var email, password, res;
-                            return __generator(this, function (_a) {
-                                switch (_a.label) {
-                                    case 0:
-                                        email = data.email, password = data.password;
-                                        return [4 /*yield*/, react_2.signIn('credentials', {
-                                                redirect: false,
-                                                email: email,
-                                                password: password
-                                            }).then(function (response) {
-                                                console.log(response);
-                                                if (response.ok) {
-                                                    alert_1["default"].success('Login realizado com sucesso');
-                                                    router.push('/');
-                                                }
-                                                else {
-                                                    alert_1["default"].warn('Email ou senha inválidos, verifique os dados e tente novamente!');
-                                                }
-                                            })["catch"](function (e) {
-                                                console.log(e);
-                                            })];
-                                    case 1:
-                                        res = _a.sent();
-                                        return [2 /*return*/];
-                                }
-                            });
-                        }); })["catch"](function (error) {
-                            alert_1["default"].error("Error: " + error.errorMessage);
-                        })];
+                    case 0:
+                        preparedData = __assign(__assign({}, data), { empresaId: empresaId });
+                        return [4 /*yield*/, dispatch(userSlice_1.create(preparedData))
+                                .unwrap()
+                                .then(function (responseData) { return __awaiter(_this, void 0, void 0, function () {
+                                var email, password, res;
+                                return __generator(this, function (_a) {
+                                    switch (_a.label) {
+                                        case 0:
+                                            if (!redirect) return [3 /*break*/, 2];
+                                            email = data.email, password = data.password;
+                                            return [4 /*yield*/, react_2.signIn('credentials', {
+                                                    redirect: false,
+                                                    email: email,
+                                                    password: password
+                                                }).then(function (response) {
+                                                    console.log(response);
+                                                    if (response.ok) {
+                                                        alert_1["default"].success('Login realizado com sucesso');
+                                                        router.push('/');
+                                                    }
+                                                    else {
+                                                        alert_1["default"].warn('Email ou senha inválidos, verifique os dados e tente novamente!');
+                                                    }
+                                                })["catch"](function (e) {
+                                                    console.log(e);
+                                                })];
+                                        case 1:
+                                            res = _a.sent();
+                                            return [3 /*break*/, 3];
+                                        case 2:
+                                            console.log(responseData);
+                                            alert_1["default"].success('Usuário cadastrado com SUCESSO!');
+                                            router.push("/empresa/" + empresaId + "/users");
+                                            _a.label = 3;
+                                        case 3: return [2 /*return*/];
+                                    }
+                                });
+                            }); })["catch"](function (error) {
+                                alert_1["default"].warn("Error: " + error.message);
+                            })];
                     case 1:
                         _a.sent();
                         return [2 /*return*/];
@@ -131,7 +154,7 @@ exports.RegisterForm = function (_a) {
         });
     }
     react_1.useEffect(function () {
-        messageSlice_1.setMessage('Lading...');
+        messageSlice_1.setMessage('Loading...');
         return function () {
         };
     }, []);
@@ -140,13 +163,15 @@ exports.RegisterForm = function (_a) {
                 username: '',
                 email: '',
                 password: '',
+                confirmPassword: '',
                 provider: '',
-                idProvider: ''
+                idProvider: '',
+                isAddMode: isAddMode
             }, validationSchema: validationSchema, onSubmit: function (values, _a) {
                 var setSubmitting = _a.setSubmitting;
                 handleRegister(values);
             } }, function (props) {
-            var values = props.values, touched = props.touched, errors = props.errors, dirty = props.dirty, isSubmitting = props.isSubmitting, handleChange = props.handleChange, handleBlur = props.handleBlur, handleSubmit = props.handleSubmit, handleReset = props.handleReset;
+            var values = props.values, touched = props.touched, errors = props.errors, dirty = props.dirty, isSubmitting = props.isSubmitting, handleChange = props.handleChange, handleBlur = props.handleBlur, handleSubmit = props.handleSubmit, handleReset = props.handleReset, setValues = props.setValues;
             return (React.createElement(formik_1.Form, null,
                 React.createElement("label", { className: styles.label, htmlFor: "username" }, "Nome"),
                 React.createElement(formik_1.Field, { className: styles.field, id: "username", name: "username", placeholder: "Michael" }),
@@ -154,10 +179,14 @@ exports.RegisterForm = function (_a) {
                 React.createElement("label", { className: styles.label, htmlFor: "email" }, "Email"),
                 React.createElement(formik_1.Field, { className: styles.field, id: "email", name: "email", placeholder: "john@acme.com", type: "email" }),
                 React.createElement(formik_1.ErrorMessage, { className: 'text-sm text-red-500 mt-1', name: "email", component: "div" }),
-                React.createElement("label", { className: styles.label, htmlFor: "password" }, "Senha"),
-                React.createElement(formik_1.Field, { type: "password", className: styles.field, id: "password", name: "password", placeholder: "******" }),
-                React.createElement(formik_1.ErrorMessage, { className: 'text-sm text-red-500 mt-1', name: "password", component: "div" }),
-                React.createElement("div", { className: 'mt-8 flex flex-row justify-between w-full items-center' },
+                isAddMode && (React.createElement(React.Fragment, null,
+                    React.createElement("label", { className: styles.label, htmlFor: "password" }, "Senha"),
+                    React.createElement(formik_1.Field, { type: "password", className: styles.field, id: "password", name: "password", placeholder: "******" }),
+                    React.createElement(formik_1.ErrorMessage, { className: 'text-sm text-red-500 mt-1', name: "password", component: "div" }),
+                    React.createElement("label", { className: styles.label, htmlFor: "password" }, "Confirmar a Senha"),
+                    React.createElement(formik_1.Field, { type: "password", className: styles.field, id: "confirmPassword", name: "confirmPassword", placeholder: "******" }),
+                    React.createElement(formik_1.ErrorMessage, { className: 'text-sm text-red-500 mt-1', name: "confirmPassword", component: "div" }))),
+                React.createElement("div", { className: 'mt-8 flex flex-row justify-end w-full items-center' },
                     React.createElement("button", { className: classNames(styles.button, 'w-full'), type: "submit" }, "Cadastrar"))));
         })));
 };

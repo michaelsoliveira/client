@@ -19,7 +19,7 @@ const Empresa = ({ id }: any) => {
     
     useEffect(() => {        
         async function loadEmpresa() {
-        
+            
             if (!isAddMode && typeof session !== typeof undefined) {
                 
                 // const response = await EmpresaService.getById(id)
@@ -42,14 +42,14 @@ const Empresa = ({ id }: any) => {
         razaoSocial:
             Yup.string()
                 .min(3, "Razão Social deve ter no minimo 3 caracteres")
-                .max(40, "Razão Social deve ter no máximo 40 caracteres")
+                .max(100, "Razão Social deve ter no máximo 100 caracteres")
                 .required('O campo Razão Social é obrigatório '),
         nomeFantasia:
             Yup.string()
                 .nullable()
                 .transform(value => (!value ? null : value))
                 .min(3, "Nome Fantasia deve ter no minimo 3 caracteres")
-                .max(40, "Nome Fantasia deve ter no máximo 40 caracteres"),
+                .max(100, "Nome Fantasia deve ter no máximo 100 caracteres"),
         respTecnico:
             Yup.string()
                 .matches(
@@ -59,7 +59,7 @@ const Empresa = ({ id }: any) => {
                 .nullable()
                 .transform(value => (!value ? null : value))
                 .min(3, "Responsável técnico deve ter no minimo 3 caracteres")
-                .max(40, "Responsável técnico deve ter no máximo 40 caracteres")
+                .max(100, "Responsável técnico deve ter no máximo 100 caracteres")
     })
 
     const formOptions = { resolver: yupResolver(validationSchema) }

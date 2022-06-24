@@ -63,16 +63,16 @@ exports.create = toolkit_1.createAsyncThunk('user/create', function (dataRequest
             case 1:
                 _a = _b.sent(), data = _a.data, error = _a.error, errorMessage = _a.errorMessage;
                 if (error) {
-                    return [2 /*return*/, thunkAPI.rejectWithValue({ errorMessage: errorMessage })];
+                    return [2 /*return*/, thunkAPI.rejectWithValue({ message: errorMessage })];
                 }
                 return [2 /*return*/, {
                         data: data,
                         error: error,
-                        errorMessage: errorMessage
+                        message: errorMessage
                     }];
             case 2:
                 error_1 = _b.sent();
-                return [2 /*return*/, thunkAPI.rejectWithValue(error_1.message)];
+                return [2 /*return*/, thunkAPI.rejectWithValue({ error: error_1 })];
             case 3: return [2 /*return*/];
         }
     });

@@ -1,6 +1,7 @@
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
-import Especie from "../../../components/Especie";
+import Categoria from "../../../components/Categoria";
+import withAuthentication from '../../../components/withAuthentication'
 
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
@@ -24,4 +25,4 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     }
 }
 
-export default Especie;
+export default withAuthentication(Categoria);
